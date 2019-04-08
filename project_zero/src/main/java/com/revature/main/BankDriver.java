@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,8 +17,8 @@ public class BankDriver {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
-		 File file=new File("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+///Bank/project_zero/src/main/java/resources/Connection.prop
+		 File file=new File("//Users//shaneflynn//GitRepos//Bank//project_zero//src//main//java//resources//Connection.prop"); 
 		 System.out.println(new File(".").getAbsoluteFile());
 		    System.out.println(file.exists());
 		    try {
@@ -28,7 +29,7 @@ public class BankDriver {
 			}
 		  try 
 		  { 
-		  Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		  Connection con = ConnectionUtil.getConnectionFromFile("//Users//shaneflynn//GitRepos//Bank//project_zero//src//main//java//resources//Connection.prop");
 		  System.out.println(con); 
 		  }
 		  catch (SQLException e) 
@@ -39,7 +40,12 @@ public class BankDriver {
 		  {
 			  e.printStackTrace(); 
 		  }
-		 
+		  
+		  BankDAO bd = new BankDAOImpl();
+			List<Customer> customerList = bd.getCustomer();
+			for(Customer b : customerList) {
+				System.out.println(b);
+	}
 	}
 
 }
