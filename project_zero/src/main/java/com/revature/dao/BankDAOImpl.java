@@ -19,41 +19,41 @@ public class BankDAOImpl implements BankDAO {
 		
 		return null;
 	}
+	
 	public Customer getCustById(int id) {
 		
 		return null;
 	}
+	
 	public void createCust(Customer user) {
-		
-		//Connection con = null;
-        Statement stmt = null;
-        
+		//Create PreparedStatement object to execute DML queries.
+        PreparedStatement stmt = null;
+        //Some exception handling with connecting to a file.
 		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+			
+			//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
+			stmt = con.prepareStatement("INSERT INTO BANKUSER (USER_ID, USERNAME, PASSWORD, FIRST_NAME ,LAST_NAME) VALUES (?,?,?,?,?)");
+			stmt.setInt(1, user.getId());
+			stmt.setString(2, user.getUsername());
+			stmt.setString(3, user.getPassword());
+			stmt.setString(4, user.getFname());
+			stmt.setString(5, user.getLname());
+			
+		    stmt.execute();
+           //More exception handling.
+	      } catch (SQLException sqlEx) {
+	             sqlEx.printStackTrace();
+	             System.exit(1);  
+	      } catch (IOException e1) {
+			e1.printStackTrace();
+			} finally {
+		             try { 	//Ideally would close connection here.
+		                    stmt.close();  
+			             } catch (Exception e) {
+			                    System.exit(1); 
+			             }
+		      }
 		
-			String sql = "INSERT INTO BANKUSER (USER_ID, USERNAME, PASSWORD, FIRSTNAME ,LASTNAME )" + 
-					"VALUES ("+user.getId()+","+ user.getUsername() +", "+user.getPassword()+", "+user.getFname()+", "+user.getLname()+")" ;
-			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
-			while(rs.next()) {
-				System.out.println(rs.getInt("USER_ID"));
-				System.out.println(rs.getString("USERNAME"));
-				System.out.println(rs.getString("PASSWORD"));
-				System.out.println(rs.getString("FIRSTNAME"));
-				System.out.println(rs.getString("LASTNAME"));
-			}
-			
-			
-		} catch (SQLException | IOException e) {
-			e.printStackTrace();
-		}
-				finally {
-		            try {
-		                   stmt.close();
-		                  // con.close();
-		            } catch (Exception e) {
-		                   System.exit(1);
-		            }
-				}
 	}
 	public void updateCust(Customer bear) {
 		

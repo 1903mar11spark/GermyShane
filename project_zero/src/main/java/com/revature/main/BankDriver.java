@@ -15,8 +15,9 @@ import com.revature.util.ConnectionUtil;
 public class BankDriver {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		 File file=new File("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+
+		//Checking if file cane be found. Returns true if so, else false.
+		File file=new File("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
 		 System.out.println(new File(".").getAbsoluteFile());
 		    System.out.println(file.exists());
 		    try {
@@ -27,7 +28,8 @@ public class BankDriver {
 			}
 		  try 
 		  { 
-		
+		  
+		  //Create connection with user. Do some exception handling.
 		  Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
 		  System.out.println(con); 
 		  }
@@ -40,14 +42,18 @@ public class BankDriver {
 			  e.printStackTrace(); 
 		  }
 		  
+		  //Instantiate Scanner, Customer and Account objects to use later. Create variable of type int for switch statement.
 		  Scanner in = new Scanner(System.in);
 		  Customer a = new Customer();
 		  Account b = new Account();
 		  int choice;
 		  
+		  //Print menu for user selection. Prompt user for action they would like to do.
 		  menu();
 		  System.out.println("What would you like to do?:");
 		  choice = in.nextInt();
+		  
+		  //A do while loop for the menu. Exits when user enters the number 6. Offers the user 5 other choices.
 		  do {
 			  
 			 switch (choice) {
@@ -55,16 +61,21 @@ public class BankDriver {
 			 case 1 :
 				 System.out.println("hi");
 				 break;
+				 
 			 case 2 :
 				 break;
+				 
 			 case 3 :
 				 break;
-			 case 4 :
 				 
+			 case 4 :
+				CreateBankUser();
 				 break;
+				 
 			 case 5 :
 				 menu();
 				 break;
+				 
 			 case 6 :
 				 break;
 				 
@@ -72,13 +83,17 @@ public class BankDriver {
 				break;
 			 }
 			 
+			//After user makes selection and  finishes their task, they are prompted again for the next action.
 			System.out.println("What would you like to do?:");
 			choice = in.nextInt();
 			
 		  }while(choice != 6);
 		 
 	}
+	//Option 4 - Create user and add to table.
 	public static void CreateBankUser() {
+	
+		//Strings that will hold the users first name, last name, user name and password.
 		String first, last, user, pass;
 		Scanner in = new Scanner(System.in);
 		
@@ -87,34 +102,50 @@ public class BankDriver {
 		
 	
 		System.out.println("To create a new user account I would like to ask you your first and last name. Click enter after each entry.");
-		first = in.toString();
-		last = in.toString();
+		first = in.nextLine();
+		last = in.nextLine();
+		
 		if( first.isEmpty() || last.isEmpty() ) {
+			
 			do { 
+				
 				System.out.println("Error! You must enter a First AND Last name! Please try again."
 						+ "Click enter after each entry.");
-				first = in.toString();
-				last = in.toString();
+				first = in.nextLine();
+				last = in.nextLine();
+				
 			}while( first.isEmpty() && last.isEmpty() );
+			
 		}
+		
+		/*If user enters values for their first an last name, they are then prompted to create their user name and password.
+		Minimum validation for their user name and password as well.*/
 		System.out.println("Thank you for. Now to create your account.");
 		System.out.print("Please enter your desired username: ");
-		user = in.toString();
-		System.out.println("Now enter your desired password: ");
-		pass = in.toString();
+		user = in.nextLine();
+		
+		System.out.print("Now enter your desired password: ");
+		pass = in.nextLine();
 		
 		if( user.isEmpty() || pass.isEmpty() ) {
+			
 			do { 
+				
 				System.out.println("Error! You must enter a valid username and password! Please try again."
 						+ "Click enter after each entry.");
-				user = in.toString();
-				pass = in.toString();
+				user = in.nextLine();
+				pass = in.nextLine();
+				
 			}while( user.isEmpty() && pass.isEmpty() );
 		}
+		
+		//Take user input and create the user object. Pass Customer object into BankDAOImpl which implements the BankDAO interface.
 		Customer create = new Customer(first,last,user, pass);
 		BankDAOImpl bank= new BankDAOImpl();
 		bank.createCust(create);
+		
 	}
+	//Menu printed out in main.
 	public static void menu() {
 		System.out.println("Welcome to ShaneCorp Bank Inc!\n");
 		System.out.println("1. Deposit");
