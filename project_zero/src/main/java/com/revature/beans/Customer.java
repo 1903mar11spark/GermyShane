@@ -1,7 +1,7 @@
 package com.revature.beans;
 
 public class Customer {
-	private int id;
+	private static int id = 0;
 	private String fname;
 	private String lname;
 	private String username;
@@ -10,14 +10,15 @@ public class Customer {
 	public Customer() {
 		super();
 		// TODO Auto-generated constructor stub
+		id = id++;
 	}
 	public Customer(int id) {
 		super();
 		
 	}
-	public Customer(int id, String fname, String lname, String username, String password) {
+	public Customer( String fname, String lname, String username, String password) {
 		super();
-		this.id = id;
+		//Customer.id = id;
 		this.fname = fname;
 		this.lname = lname;
 		this.username = username;
@@ -25,11 +26,11 @@ public class Customer {
 	}
 	
 	public int getId() {
-		return id;
+		return Customer.id;
 	}
 	
 	public void setId(int id) {
-		this.id = id;
+		Customer.id = id;
 	}
 	
 	public String getFname() {

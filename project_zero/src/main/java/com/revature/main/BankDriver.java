@@ -60,6 +60,7 @@ public class BankDriver {
 			 case 3 :
 				 break;
 			 case 4 :
+				 
 				 break;
 			 case 5 :
 				 menu();
@@ -76,6 +77,43 @@ public class BankDriver {
 			
 		  }while(choice != 6);
 		 
+	}
+	public static void CreateBankUser() {
+		String first, last, user, pass;
+		Scanner in = new Scanner(System.in);
+		
+		
+		System.out.println("Thank you for choosing ShaneCorp Bank Inc!");
+		
+	
+		System.out.println("To create a new user account I would like to ask you your first and last name. Click enter after each entry.");
+		first = in.toString();
+		last = in.toString();
+		if( first.isEmpty() || last.isEmpty() ) {
+			do { 
+				System.out.println("Error! You must enter a First AND Last name! Please try again."
+						+ "Click enter after each entry.");
+				first = in.toString();
+				last = in.toString();
+			}while( first.isEmpty() && last.isEmpty() );
+		}
+		System.out.println("Thank you for. Now to create your account.");
+		System.out.print("Please enter your desired username: ");
+		user = in.toString();
+		System.out.println("Now enter your desired password: ");
+		pass = in.toString();
+		
+		if( user.isEmpty() || pass.isEmpty() ) {
+			do { 
+				System.out.println("Error! You must enter a valid username and password! Please try again."
+						+ "Click enter after each entry.");
+				user = in.toString();
+				pass = in.toString();
+			}while( user.isEmpty() && pass.isEmpty() );
+		}
+		Customer create = new Customer(first,last,user, pass);
+		BankDAOImpl bank= new BankDAOImpl();
+		bank.createCust(create);
 	}
 	public static void menu() {
 		System.out.println("Welcome to ShaneCorp Bank Inc!\n");
