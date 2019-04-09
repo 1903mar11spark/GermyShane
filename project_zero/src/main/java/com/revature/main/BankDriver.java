@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Scanner;
 
@@ -50,7 +51,7 @@ public class BankDriver {
 		  
 		  //Print menu for user selection. Prompt user for action they would like to do.
 		  menu();
-		  System.out.println("What would you like to do?:");
+		  System.out.println("How can we assist you today? Enter a number between 1 and 6:");
 		  choice = in.nextInt();
 		  
 		  //A do while loop for the menu. Exits when user enters the number 6. Offers the user 5 other choices.
@@ -59,7 +60,7 @@ public class BankDriver {
 			 switch (choice) {
 			 
 			 case 1 :
-				 System.out.println("hi");
+				 Deposit();
 				 break;
 				 
 			 case 2 :
@@ -84,7 +85,7 @@ public class BankDriver {
 			 }
 			 
 			//After user makes selection and  finishes their task, they are prompted again for the next action.
-			System.out.println("What would you like to do?:");
+			System.out.println("What would you like to do?: ");
 			choice = in.nextInt();
 			
 		  }while(choice != 6);
@@ -154,5 +155,62 @@ public class BankDriver {
         System.out.println("4. Create User");
         System.out.println("5. Menu");
         System.out.println("6. Exit\n");
+	}
+	
+	public static void Deposit() {
+		Scanner in = new Scanner(System.in);
+		NumberFormat form = NumberFormat.getCurrencyInstance();
+		String input = "nada";
+		double money;
+		
+		System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
+		do{
+		   
+				System.out.print("Enter deposit amount: ");
+		        input = in.next();
+		        
+		        if(!input.matches("[0-9.]*")){
+		        	System.out.println("Sorry that is not a valid entry. Please try again. ");
+		        }
+		   
+		}while(!input.matches("[0-9.]*"));
+		money = Double.parseDouble(input);
+		
+		
+		
+		
+		
+		System.out.println("Thank you for your deposit of " + form.format(money) +"!");
+		
+	}
+	
+	public static void Withdraw() {
+		Scanner in = new Scanner(System.in);
+		NumberFormat form = NumberFormat.getCurrencyInstance();
+		String input = "nada";
+		double money;
+		
+		System.out.println("To withdraw money, please specify the amount of which you would like to withdraw below.");
+		do{
+		   
+				System.out.print("Enter withdrawal amount: ");
+		        input = in.next();
+		        
+		        if(!input.matches("[0-9.]*")){
+		        	System.out.println("Sorry that is not a valid entry. Please try again. ");
+		        }
+		   
+		}while(!input.matches("[0-9.]*"));
+		money = Double.parseDouble(input);
+		
+		
+		
+		
+		
+		System.out.println("You withdrew from your account in the amount of " + form.format(money) +". Thank you, come again!");
+	}
+	
+	public static void getBal() {
+	
 	}
 }
