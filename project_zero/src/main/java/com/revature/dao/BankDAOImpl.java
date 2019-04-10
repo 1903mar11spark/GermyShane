@@ -17,20 +17,21 @@ public class BankDAOImpl implements BankDAO {
 		List<Customer> cust = new ArrayList<Customer>();
 		Connection con = null;
 		ResultSet rs = null;
+		
 		try 
 		  { 
 		   con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
-		  String sql = "SELECT USER_ID, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME FROM BANKUSER";
-			Statement stmt = con.createStatement();
-			 rs = stmt.executeQuery(sql);
-			while (rs.next()) {
-				//int id = rs.getInt("USER_ID");
-				String username = rs.getString("USERNAME");
-				String password = rs.getString("PASSWORD");
-				String fName = rs.getString("FIRST_NAME");
-				String lName = rs.getString("LAST_NAME");
-				cust.add(new Customer(username, password, fName, lName));
-		  }
+		   String sql = "SELECT USER_ID, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME FROM BANKUSER";
+		   Statement stmt = con.createStatement();
+		   rs = stmt.executeQuery(sql);
+		   
+				while (rs.next()) {
+					String username = rs.getString("USERNAME");
+					String password = rs.getString("PASSWORD");
+					String fName = rs.getString("FIRST_NAME");
+					String lName = rs.getString("LAST_NAME");
+					cust.add(new Customer(username, password, fName, lName));
+			  }
 		  }
 		  catch (SQLException e) 
 		  { 
@@ -45,6 +46,11 @@ public class BankDAOImpl implements BankDAO {
 			}
 		
 			return cust;
+	}
+	
+	public List<Account> getAccount(){
+		
+		return null;
 	}
 
 	
@@ -70,15 +76,11 @@ public class BankDAOImpl implements BankDAO {
 	      } catch (SQLException sqlEx) {
 	             sqlEx.printStackTrace();
 	             System.exit(1);  
-	      } catch (IOException e1) {
-			e1.printStackTrace();
-			} finally {
-		             try { 	//Ideally would close connection here.
-		                    stmt.close();  
-			             } catch (Exception e) {
-			                    System.exit(1); 
-			             }
-		      }
+	      } catch (IOException e1) {e1.printStackTrace();} 
+					finally {
+				             try {stmt.close();}
+				             	catch (Exception e) {System.exit(1);}
+				        	}
 		
 	}
 	
@@ -86,43 +88,32 @@ public class BankDAOImpl implements BankDAO {
 		PreparedStatement myStmt = null;
 		boolean x = false;
 		ResultSet rs = null;
+		
 		try 
 		  { 
+			
 		  Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
 		  myStmt = con.prepareStatement("SELECT USERNAME, PASSWORD FROM BANKUSER WHERE USERNAME = ? AND PASSWORD =?");
 		  myStmt.setString(1, first);
 		  myStmt.setString(2, second);
 		  rs = myStmt.executeQuery();
+		  
 		  if (!rs.next()) {
 			  System.out.println("Wrong Username and Password.");
-		  } else {
-			  x = true;
+			 } 
+			  else {
+				  x = true;
+				   }
+				
 		  }
-			
-		  }
-		  
-		  catch (SQLException e) 
-		  { 
-			  e.printStackTrace(); 
-		  }
-		  catch (IOException e) 
-		  {
-			  e.printStackTrace(); 
-		  }
+			  catch (SQLException e) 
+			  {e.printStackTrace();}
+			  catch (IOException e) 
+			  { e.printStackTrace();}
 		  return x;
 
-}
-	public void updateCust(Customer bear) {
-		
-	}
-	public void deleteCust(Customer bear) {
-		
 	}
 	
-	public List<Account> getAccount(){
-		
-		return null;
-	}
 	public Customer getAcctById(int id) {
 		
 		return null;
@@ -160,6 +151,7 @@ public class BankDAOImpl implements BankDAO {
 		      }
 		
 	}
+	
 	public double getMoney(Customer c) {
 		double money = 5;
 		PreparedStatement stmt = null;
@@ -196,62 +188,59 @@ public class BankDAOImpl implements BankDAO {
 			}
 		return money;
 	}
-	public void updateAcc(Account up) {
-		
-		
-	}
-	public void deleteAcc(Account del) {
-		
-		
-	}
-
 	
-	public Customer getCustomer(String user, String pass) {
-		PreparedStatement stmt = null ;
-		Connection con = null;
-		ResultSet rs = null;
-		int id = 1;
-		String username ="" ,password = "" , fName = "", lName = "" ;
-		try 
-		  { 
-		   con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
-		  String sql = "SELECT USER_ID, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME FROM BANKUSER WHERE USERNAME = ? AND PASSWORD = ?";
-		  stmt = con.prepareStatement(sql);
-		  stmt.setString(1, user);
-		  stmt.setString(2, pass);
-		  
-		  
-			 rs = stmt.executeQuery();
-			while (rs.next()) {
-				 id = rs.getInt("USER_ID");
-				 username = rs.getString("USERNAME");
-				 password = rs.getString("PASSWORD");
-				 fName = rs.getString("FIRST_NAME");
-				 lName = rs.getString("LAST_NAME");
-		  }
-		  }
-		  catch (SQLException e) 
-		  { 
-			  e.printStackTrace(); 
-		  }
-		  catch (IOException e) 
-		  {
-			  e.printStackTrace(); 
-		  }
-		catch (NullPointerException e) 
-		  { 
-			  e.printStackTrace(); 
-		  }
-		finally {
-		    try { rs.close(); } catch (Exception e) { /* ignored */ }
-		    try { con.close(); } catch (Exception e) { /* ignored */ }
-		}
-			Customer thisCust = new Customer(id,username,password,fName,lName);
-			return thisCust;
-	}
+	public double Deposit(Customer c, double amount) {
 
+		double money = 0, newBal = 0;
+		PreparedStatement stmt = null, stmt2;
+		
+		ResultSet rs = null, rs2 = null;
+		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+			
+			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ?");
+			stmt.setInt(1, c.getId());
+		 
+		    rs = stmt.executeQuery();
+		    while(rs.next()) {
+		    	money = rs.getDouble("BALANCE");
+		    }
+		    
+		    
+			    money = money + amount;
+			    
+			    stmt2 = con.prepareStatement("UPDATE ACCOUNTS SET BALANCE = ? WHERE USER_ID = ?");
+				stmt2.setDouble(1, money);
+				stmt2.setInt(2, c.getId());
+				
+				rs2 = stmt2.executeQuery();
+				while(rs.next()) {
+			    	money = rs.getDouble("BALANCE");
+			    }
+				rs = stmt.executeQuery();
+			    while(rs.next()) {
+			    	money = rs.getDouble("BALANCE");
+			    }
+			    
+				newBal = money;
+		   
+           //More exception handling.
+	      } catch (SQLException sqlEx) {
+	             sqlEx.printStackTrace();
+	             System.exit(1);  
+	      } catch (IOException e1) {e1.printStackTrace();} 
+				finally {
+		            	try {stmt.close();}
+			            	catch (Exception e) {}
+			     		    		try { rs.close(); } 
+			     		    			catch (Exception e) { /* ignored */ }
+	     		    
+	      
+						}
+			
+		return newBal;
 
-	@Override
+	}	
+	
 	public double Withdraw(Customer c, double amount) {
 
 		double money = 0, newBal = 0;
@@ -310,7 +299,67 @@ public class BankDAOImpl implements BankDAO {
 
 
 }
-	
 
+	public Customer getCustomer(String user, String pass) {
+		PreparedStatement stmt = null ;
+		Connection con = null;
+		ResultSet rs = null;
+		int id = 1;
+		String username ="" ,password = "" , fName = "", lName = "" ;
+		try 
+		  { 
+		   con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		  String sql = "SELECT USER_ID, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME FROM BANKUSER WHERE USERNAME = ? AND PASSWORD = ?";
+		  stmt = con.prepareStatement(sql);
+		  stmt.setString(1, user);
+		  stmt.setString(2, pass);
+		  
+		  
+			 rs = stmt.executeQuery();
+			while (rs.next()) {
+				 id = rs.getInt("USER_ID");
+				 username = rs.getString("USERNAME");
+				 password = rs.getString("PASSWORD");
+				 fName = rs.getString("FIRST_NAME");
+				 lName = rs.getString("LAST_NAME");
+		  }
+		  }
+		  catch (SQLException e) 
+		  { 
+			  e.printStackTrace(); 
+		  }
+		  catch (IOException e) 
+		  {
+			  e.printStackTrace(); 
+		  }
+		catch (NullPointerException e) 
+		  { 
+			  e.printStackTrace(); 
+		  }
+		finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { con.close(); } catch (Exception e) { /* ignored */ }
+		}
+			Customer thisCust = new Customer(id,username,password,fName,lName);
+			return thisCust;
+	}
+
+
+	public void updateCust(Customer cust) {
+		
+	}
 	
+	public void deleteCust(Customer cust) {
+		
+	}
+	
+	public void updateAcc(Account up) {
+		
+		
+	}
+	
+	public void deleteAcc(Account del) {
+		
+		
+	}
 }

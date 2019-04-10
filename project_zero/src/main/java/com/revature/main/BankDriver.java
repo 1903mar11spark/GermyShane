@@ -18,7 +18,6 @@ public class BankDriver {
 		
 		  try 
 		  { 
-		  
 		  //Create connection with user. Do some exception handling.
 		  Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
 		  System.out.println(con); 
@@ -44,6 +43,7 @@ public class BankDriver {
 		  System.out.println("Welcome to ShaneCorp Bank! If you have an account enter 1, if you need to create an account enter 2");
 		  String num = in.nextLine();
 		  
+		  //if.1 Beginning
 		  if (num.contentEquals("1")) {
 			  
 			  //Scanner user = new Scanner(System.in);
@@ -51,6 +51,8 @@ public class BankDriver {
 			  user = in.nextLine();
 			  System.out.println("Input a Password.");	
 			  pass = in.nextLine();
+			  
+			//if.1 Ends, else if .1 Begins  
 		  } else if (num.contentEquals("2")) {
 				
 				//Strings that will hold the users first name, last name, user name and password.				
@@ -70,7 +72,7 @@ public class BankDriver {
 						first = in.nextLine();
 						last = in.nextLine();
 						
-					}while( first.isEmpty() && last.isEmpty() );
+						}while( first.isEmpty() && last.isEmpty() );
 					
 					
 				}
@@ -94,7 +96,7 @@ public class BankDriver {
 						user = in.nextLine();
 						pass = in.nextLine();
 						
-					}while( user.isEmpty() && pass.isEmpty() );
+						}while( user.isEmpty() && pass.isEmpty() );
 				}
 				
 				//Take user input and create the user object. Pass Customer object into BankDAOImpl which implements the BankDAO interface.
@@ -102,7 +104,8 @@ public class BankDriver {
 				a = cust;
 				bd.createCust(a);
 				System.out.println("Your user account have been created.\n");
-		  }
+				
+		  }//else if.1 Ends
 		  
 		  if (bd.getCustByLogin(user, pass)) {
 			  
@@ -120,7 +123,7 @@ public class BankDriver {
 			 
 			 case 1 :
 					String deposit = "nada";
-					double dmoney;
+					double dmoney, newMonay;
 					
 					System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
 					do{
@@ -134,10 +137,10 @@ public class BankDriver {
 					   
 					}while(!deposit.matches("[0-9.]*"));
 					dmoney = Double.parseDouble(deposit);
+				
 					
-					
-					System.out.println("Thank you for your deposit of " + form.format(dmoney) +"!\n");
-				 Deposit();
+					newMonay = bd.Deposit(theCust, dmoney);
+					System.out.println("You deposited " + form.format(dmoney) +" into yout account" +". Your current balance is "+ form.format(newMonay) + "!\n");
 				 break;
 				 
 			 case 2 :
@@ -198,12 +201,13 @@ public class BankDriver {
 		  }while(choice != 6);
 		  }
 		 in.close();
-	}
+}
 
-	//Menu printed out in main.
-	public static void menu() {
+//Menu printed out in main.
+public static void menu() {
 			
-			System.out.println("Welcome to ShaneCorp Bank Inc!\n");
+			System.out.println("Welcome to ShaneCorp Bank Inc!");
+			System.out.println("Select an option from the menu below:\n");
 			System.out.println("1. Deposit");
 	        System.out.println("2. Withdraw");
 	        System.out.println("3. View Account Balance");
@@ -211,8 +215,9 @@ public class BankDriver {
 	        System.out.println("5. Menu");
 	        System.out.println("6. Exit\n");
 	        
-		}
-	public static Account BankAccount(Customer acc,String choice) {
+}
+	
+public static Account BankAccount(Customer acc,String choice) {
 		
 		//Strings that will hold the users first name, last name, user name and password.
 		String type = "";
@@ -230,48 +235,9 @@ public class BankDriver {
 		BankDAOImpl bank= new BankDAOImpl();
 		Account a = new Account(acc);
 		bank.createAcc(a);
+		in.close();
 		
 		return a;
 	}
-	
-	public static void Deposit() {
-		Scanner in = new Scanner(System.in);
-		
-		in.close();
-		
-	}
-	
-	public static void Withdraw() {
-		Scanner in = new Scanner(System.in);
-		NumberFormat form = NumberFormat.getCurrencyInstance();
-		String input = "nada";
-		double money;
-		
-		System.out.println("To withdraw money, please specify the amount of which you would like to withdraw below.");
-		do{
-		   
-				System.out.print("Enter withdrawal amount: ");
-		        input = in.next();
-		        
-		        if(!input.matches("[0-9.]*")){
-		        	System.out.println("Sorry that is not a valid entry. Please try again. ");
-		        }
-		   
-		}while(!input.matches("[0-9.]*"));
-		money = Double.parseDouble(input);
-		
-		
-		
-		
-		
-		System.out.println("You withdrew from your account in the amount of " + form.format(money) +". Thank you, come again!\n");
-		in.close();
-	}
-	
-	public static double getBal(Customer dolla) {
-		double money = 0;
-	
-		
-		return money;
-	}
+
 }

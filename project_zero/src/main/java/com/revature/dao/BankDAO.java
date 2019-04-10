@@ -12,6 +12,7 @@ public interface BankDAO {
 	public double getMoney(Customer d);
 	public boolean getCustByLogin(String first, String second);
 	public double Withdraw(Customer c, double amount);
+	public double Deposit(Customer c, double amount);
 	
 	public void updateCust(Customer bear);
 	public void deleteCust(Customer bear);
