@@ -13,4 +13,12 @@ public interface BankDAO {
 	public void createCust(Customer bear);
 	/*public void updateCust(Customer bear);
 	public void deleteCust(Customer bear);*/
+	
+	public List<Account> getAccount();
+	public Customer getAcctById(int id);
+	public void createAcc(String type, int uid);
+	public void updateAcc(Account up);
+	public void deleteAcc(Account del);
+	public int getUserId(String user, String pass);
+	public double getMoney(int id);
 }
