@@ -19,6 +19,14 @@ public class Customer {
 		this.password = password;
 	}
 	
+	public Customer(int id, String fname, String lname, String username, String password) {
+		super();
+		this.id = id;
+		this.fname = fname;
+		this.lname = lname;
+		this.username = username;
+		this.password = password;
+	}
 	public int getId() {
 		return this.id;
 	}

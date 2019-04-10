@@ -35,8 +35,9 @@ public class BankDriver {
 		  //Instantiate Scanner, Customer and Account objects to use later. Create variable of type int for switch statement.
 		  Scanner in = new Scanner(System.in);
 		  Customer a = new Customer() ;
-		  Account b = new Account();;
+		  Account b = new Account();
 		  BankDAO bd = new BankDAOImpl();
+		  NumberFormat form = NumberFormat.getCurrencyInstance();
 		  String first, last, user =  "" , pass = "";
 		  int choice;
 		  
@@ -104,6 +105,9 @@ public class BankDriver {
 		  }
 		  
 		  if (bd.getCustByLogin(user, pass)) {
+			  
+			Customer theCust = bd.getCustomer(user,pass);
+			
 		  //Print menu for user selection. Prompt user for action they would like to do.
 		  menu();
 		  System.out.println("How can we assist you today? Enter a number between 1 and 6:");
@@ -115,15 +119,52 @@ public class BankDriver {
 			 switch (choice) {
 			 
 			 case 1 :
+					String deposit = "nada";
+					double dmoney;
+					
+					System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
+					do{
+					   
+							System.out.print("Enter deposit amount: ");
+					        deposit = in.next();
+					        
+					        if(!deposit.matches("[0-9.]*")){
+					        	System.out.println("Sorry that is not a valid entry. Please try again. ");
+					        }
+					   
+					}while(!deposit.matches("[0-9.]*"));
+					dmoney = Double.parseDouble(deposit);
+					
+					
+					System.out.println("Thank you for your deposit of " + form.format(dmoney) +"!\n");
 				 Deposit();
 				 break;
 				 
 			 case 2 :
-				 Withdraw();
-				 break;
+				 	String withdraw = "nada";
+					double wmoney, newMoney;
+					
+					System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
+					do{
+					   
+							System.out.print("Enter deposit amount: ");
+					        withdraw = in.next();
+					        
+					        if(!withdraw.matches("[0-9.]*")){
+					        	System.out.println("Sorry that is not a valid entry. Numbers only. Please try again. ");
+					        }
+					   
+					}while(!withdraw.matches("[0-9.]*"));
+					wmoney = Double.parseDouble(withdraw);
+					
+					newMoney = bd.Withdraw(theCust, wmoney);
+					System.out.println("You have withdrew " + form.format(wmoney) +". Your current balance is "+ form.format(newMoney) + "!\n");
 				 
+				 break;
+				
 			 case 3 :
-				 getBal();
+				 
+				 System.out.println("You got " + form.format(bd.getMoney(theCust)));
 				 break;
 				 
 			 case 4 :
@@ -175,7 +216,6 @@ public class BankDriver {
 		
 		//Strings that will hold the users first name, last name, user name and password.
 		String type = "";
-		@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
 	   
 		
@@ -196,28 +236,7 @@ public class BankDriver {
 	
 	public static void Deposit() {
 		Scanner in = new Scanner(System.in);
-		NumberFormat form = NumberFormat.getCurrencyInstance();
-		String input = "nada";
-		double money;
 		
-		System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
-		do{
-		   
-				System.out.print("Enter deposit amount: ");
-		        input = in.next();
-		        
-		        if(!input.matches("[0-9.]*")){
-		        	System.out.println("Sorry that is not a valid entry. Please try again. ");
-		        }
-		   
-		}while(!input.matches("[0-9.]*"));
-		money = Double.parseDouble(input);
-		
-		
-		
-		
-		
-		System.out.println("Thank you for your deposit of " + form.format(money) +"!\n");
 		in.close();
 		
 	}
@@ -249,7 +268,10 @@ public class BankDriver {
 		in.close();
 	}
 	
-	public static void getBal() {
+	public static double getBal(Customer dolla) {
+		double money = 0;
 	
+		
+		return money;
 	}
 }

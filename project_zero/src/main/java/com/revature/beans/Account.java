@@ -3,7 +3,7 @@ package com.revature.beans;
 public class Account {
 	private int accId;
 	private Customer user;
-	private double balance = 0;
+	private double balance = 5;
 	private String type = "Checkings";
 	
 	public Account() {
@@ -36,7 +36,7 @@ public class Account {
 	}
 
 	public double getBalance() {
-		return balance;
+		return this.balance;
 	}
 
 	public void setBalance(double balance) {
