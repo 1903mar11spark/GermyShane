@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class BankDAOImpl implements BankDAO {
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
-				int id = rs.getInt("USER_ID");
+				//int id = rs.getInt("USER_ID");
 				String username = rs.getString("USERNAME");
 				String password = rs.getString("PASSWORD");
 				String fName = rs.getString("FIRST_NAME");
@@ -128,27 +127,16 @@ public class BankDAOImpl implements BankDAO {
 		return null;
 	}
 	
-	@SuppressWarnings("null")
 	public void createAcc(Account acc) {
-			int id; 
-			PreparedStatement stmt = null, stmt3 = null;
-			ResultSet rs;
+		
+			PreparedStatement stmt = null;
 			Customer user =  acc.getUser();
 			
 			
 			
 			
 			try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
-				/*
-				stmt3 = con.prepareStatement("SELECT USER_ID FROM BANKUSER WHERE FIRST_NAME = ? AND LAST_NAME = ?");
-				stmt3.setString(1, user.getFname());
-				stmt3.setString(2, user.getLname());
-				
-				rs = stmt3.executeQuery();
-				if(rs.next()) {
-					id = rs.getInt("USER_ID");
-				}*/
-			//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
+			
 			stmt = con.prepareStatement("INSERT INTO ACCOUNTS ( BALANCE, ACCOUNT_TYPE ,USER_ID) VALUES (?,?,?)");
 			stmt.setDouble(1, acc.getBalance());
 			stmt.setString(2, acc.getType());

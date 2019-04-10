@@ -1,7 +1,6 @@
 package com.revature.main;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,7 +34,8 @@ public class BankDriver {
 		  
 		  //Instantiate Scanner, Customer and Account objects to use later. Create variable of type int for switch statement.
 		  Scanner in = new Scanner(System.in);
-		  Customer a = new Customer();
+		  Customer a = new Customer() ;
+		  Account b = new Account();;
 		  BankDAO bd = new BankDAOImpl();
 		  String first, last, user =  "" , pass = "";
 		  int choice;
@@ -76,6 +76,7 @@ public class BankDriver {
 				
 				/*If user enters values for their first an last name, they are then prompted to create their user name and password.
 				Minimum validation for their user name and password as well.*/
+				
 				System.out.println("Thank you. Now you must create your user login.");
 				System.out.print("Please enter your desired username: ");
 				user = in.nextLine();
@@ -98,7 +99,8 @@ public class BankDriver {
 				//Take user input and create the user object. Pass Customer object into BankDAOImpl which implements the BankDAO interface.
 				Customer cust = new Customer(first,last,user, pass);
 				a = cust;
-				System.out.println("Your user account have been created.");
+				bd.createCust(a);
+				System.out.println("Your user account have been created.\n");
 		  }
 		  
 		  if (bd.getCustByLogin(user, pass)) {
@@ -125,7 +127,16 @@ public class BankDriver {
 				 break;
 				 
 			 case 4 :
-				CreateBankAccount(a);
+				 	System.out.println("Thank you for choosing ShaneCorp Bank Inc!");
+					System.out.println("To create a new bank account you must first choose which type of account you want to open.");
+					System.out.println("Enter 1 for checkings or 2 for Savings. Enter 0 to quit:");
+					String typeacc = in.next();
+					
+					while(!typeacc.matches("[0-2.]*")){
+				        	System.out.println("Sorry that is not a valid entry. Please try again. ");
+				        	typeacc = in.next();
+				        }
+					b = BankAccount(a, typeacc);
 				 break;
 				 
 			 case 5 :
@@ -145,63 +156,42 @@ public class BankDriver {
 			
 		  }while(choice != 6);
 		  }
-		 
+		 in.close();
 	}
-	
-	public static void CreateBankAccount(Customer acc) {
+
+	//Menu printed out in main.
+	public static void menu() {
+			
+			System.out.println("Welcome to ShaneCorp Bank Inc!\n");
+			System.out.println("1. Deposit");
+	        System.out.println("2. Withdraw");
+	        System.out.println("3. View Account Balance");
+	        System.out.println("4. Create Savings/Checkings Account");
+	        System.out.println("5. Menu");
+	        System.out.println("6. Exit\n");
+	        
+		}
+	public static Account BankAccount(Customer acc,String choice) {
 		
 		//Strings that will hold the users first name, last name, user name and password.
-		String type, choice;
+		String type = "";
 		@SuppressWarnings("resource")
 		Scanner in = new Scanner(System.in);
-		
-		
-		System.out.println("Thank you for choosing ShaneCorp Bank Inc!");
-		
-		
-		System.out.println("To create a new bank account you must first choose which type of account you want to open.");
-		System.out.println("Enter 1 for checkings or 2 for Savings. Enter 0 to quit.:");
-		choice = in.next();
-		
-		while(!choice.matches("[0-2.]*")){
-	        	System.out.println("Sorry that is not a valid entry. Please try again. ");
-	        	choice = in.next();
-	        }
 	   
 		
-		switch (choice) {
-		
-		case "1":
+		if(type == "1") {
 			type = "Checkings";
-			break;
-			
-		case "2":
-			type = "Savings";
-			break;
-			
-		case "0":
-			break;
-			
-		default:
-			break;
 		}
+		else if( type == "2") {
+		type = "Savings";
+	
+		}
+		
 		BankDAOImpl bank= new BankDAOImpl();
 		Account a = new Account(acc);
 		bank.createAcc(a);
 		
-		
-	}
-	//Menu printed out in main.
-	public static void menu() {
-		
-		System.out.println("Welcome to ShaneCorp Bank Inc!\n");
-		System.out.println("1. Deposit");
-        System.out.println("2. Withdraw");
-        System.out.println("3. View Account Balance");
-        System.out.println("4. Create Account");
-        System.out.println("5. Menu");
-        System.out.println("6. Exit\n");
-        
+		return a;
 	}
 	
 	public static void Deposit() {
@@ -228,6 +218,7 @@ public class BankDriver {
 		
 		
 		System.out.println("Thank you for your deposit of " + form.format(money) +"!\n");
+		in.close();
 		
 	}
 	
@@ -255,6 +246,7 @@ public class BankDriver {
 		
 		
 		System.out.println("You withdrew from your account in the amount of " + form.format(money) +". Thank you, come again!\n");
+		in.close();
 	}
 	
 	public static void getBal() {
