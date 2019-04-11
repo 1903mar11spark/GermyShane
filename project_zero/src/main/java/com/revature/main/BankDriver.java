@@ -34,7 +34,6 @@ public class BankDriver {
 		  //Instantiate Scanner, Customer and Account objects to use later. Create variable of type int for switch statement.
 		  Scanner in = new Scanner(System.in);
 		  Customer a = new Customer() ;
-		  Account b = new Account();
 		  BankDAO bd = new BankDAOImpl();
 		  NumberFormat form = NumberFormat.getCurrencyInstance();
 		  String first, last, user =  "" , pass = "";
@@ -46,11 +45,35 @@ public class BankDriver {
 		  //if.1 Beginning
 		  if (num.contentEquals("1")) {
 			  
-			  //Scanner user = new Scanner(System.in);
-			  System.out.println("Input a username.");
-			  user = in.nextLine();
-			  System.out.println("Input a Password.");	
-			  pass = in.nextLine();
+					  //Scanner user = new Scanner(System.in);
+					  System.out.println("Input a username.");
+					  user = in.nextLine();
+					  System.out.println("Input a Password.");	
+					  pass = in.nextLine();
+					  
+					  if(user.isEmpty() || pass.isEmpty()) {
+						  do { 
+							  System.out.println("Error! You must enter a First AND Last name! Please try again.");
+							  System.out.println("Input a username.");
+							  user = in.nextLine();
+							  System.out.println("Input a Password.");	
+							  pass = in.nextLine();
+								
+								}while( user.isEmpty() && pass.isEmpty() );
+					  }
+						//If.2 Begins
+						  if (!bd.getCustByLogin(user, pass)) {
+							  do { 
+								  System.out.println("This log in does not exist. Please try again or enter 0 to quit.");
+								  System.out.println("Input a username.");
+								  user = in.nextLine();
+								  System.out.println("Input a Password.");	
+								  pass = in.nextLine();
+							  	
+								  if(user == "0" || pass == "0") {System.out.println("Goodbye!"); System.exit(0);}
+									
+							  }while( user.isEmpty() && pass.isEmpty()  || user == "0" || pass == "0");
+						  }
 			  
 			//if.1 Ends, else if .1 Begins  
 		  } else if (num.contentEquals("2")) {
@@ -72,6 +95,7 @@ public class BankDriver {
 						first = in.nextLine();
 						last = in.nextLine();
 						
+						 
 						}while( first.isEmpty() && last.isEmpty() );
 					
 					
@@ -107,10 +131,10 @@ public class BankDriver {
 				
 		  }//else if.1 Ends
 		  
-		  if (bd.getCustByLogin(user, pass)) {
+		  if(user == "0" || pass == "0") {System.out.println("Goodbye!"); System.exit(0);}
 			  
-			Customer theCust = bd.getCustomer(user,pass);
-			
+		  Customer theCust = bd.getCustomer(user,pass);
+		  if (bd.getCustByLogin(user, pass)) {
 		  //Print menu for user selection. Prompt user for action they would like to do.
 		  menu();
 		  System.out.println("How can we assist you today? Enter a number between 1 and 6:");
@@ -119,87 +143,138 @@ public class BankDriver {
 		  //A do while loop for the menu. Exits when user enters the number 6. Offers the user 5 other choices.
 		  do {
 			  
-			 switch (choice) {
-			 
-			 case 1 :
-					String deposit = "nada";
-					double dmoney, newMonay;
+				 switch (choice) {
+				 //1. Deposit
+				 case 1 :
+						String deposit = "nada";
+						double dmoney, newMonay;
+						
+						System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
+						do{
+						   
+								System.out.print("Enter deposit amount: ");
+						        deposit = in.next();
+						        
+						        if(!deposit.matches("[0-9.]*")){
+						        	System.out.println("Sorry that is not a valid entry. Please try again. ");
+						        }
+						   
+						}while(!deposit.matches("[0-9.]*"));
+						dmoney = Double.parseDouble(deposit);
 					
-					System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
-					do{
-					   
-							System.out.print("Enter deposit amount: ");
-					        deposit = in.next();
-					        
-					        if(!deposit.matches("[0-9.]*")){
+						
+						newMonay = bd.Deposit(theCust, dmoney);
+						System.out.println("You deposited " + form.format(dmoney) +" into yout account" +". Your current balance is "+ form.format(newMonay) + "!\n");
+					 break;
+				//2. Withdraw 
+				 case 2 :
+					 	String withdraw = "nada";
+						double wmoney, newMoney;
+						
+						System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
+						do{
+						   
+								System.out.print("Enter deposit amount: ");
+						        withdraw = in.next();
+						        
+						        if(!withdraw.matches("[0-9.]*")){
+						        	System.out.println("Sorry that is not a valid entry. Numbers only. Please try again. ");
+						        }
+						   
+						}while(!withdraw.matches("[0-9.]*"));
+						wmoney = Double.parseDouble(withdraw);
+						
+						newMoney = bd.Withdraw(theCust, wmoney);
+						System.out.println("You have withdrew " + form.format(wmoney) +". Your current balance is "+ form.format(newMoney) + "!\n");
+					 
+					 break;
+				//3. View Checkings or Savings	
+				 case 3 :
+					 double bal = 0;
+					 int myAccount;
+					 String checkorsave = "";
+					 System.out.println("From which account balance whould you like to see? Enter 1 for Checkings, 2 for Savings, or 0 to exit. ");
+					 myAccount = in.nextInt();
+					 while(myAccount != 1 || myAccount != 2 || myAccount!= 0) {
+						 
+						 System.out.println("Please enter a valid entry. Enter 1 for Checkings, 2 for Savings, or 0 to exit.");
+						 myAccount = in.nextInt();
+						 if (myAccount == 1) {
+							 checkorsave = "Checkings";
+						 }else if (myAccount == 2) {
+							 checkorsave = "Savings";
+						 }
+					 }
+					 if (myAccount == 1) {
+						 checkorsave = "Checkings";
+					 }else if (myAccount == 2) {
+						 checkorsave = "Savings";
+					 }
+					 bal = bd.getMoney(theCust, checkorsave);
+					 if(myAccount != 0 || bal != -404) {
+					 System.out.println("You have " + form.format(bal) + "in");
+					 }
+					 
+					 menu();
+					 break;
+					 
+				 case 4 :
+					 	String type = "";
+					 	int input = 0;
+					 	
+					 	System.out.println("Thank you for choosing ShaneCorp Bank Inc!");
+						System.out.println("To create a new bank account you must first choose which type of account you want to open.");
+						System.out.println("Enter 1 for checkings or 2 for Savings. Enter 0 to quit:");
+						String typeacc = in.next();
+						
+						while(!typeacc.matches("[0-2.]*")){
 					        	System.out.println("Sorry that is not a valid entry. Please try again. ");
+					        	typeacc = in.next();
 					        }
-					   
-					}while(!deposit.matches("[0-9.]*"));
-					dmoney = Double.parseDouble(deposit);
-				
-					
-					newMonay = bd.Deposit(theCust, dmoney);
-					System.out.println("You deposited " + form.format(dmoney) +" into yout account" +". Your current balance is "+ form.format(newMonay) + "!\n");
-				 break;
-				 
-			 case 2 :
-				 	String withdraw = "nada";
-					double wmoney, newMoney;
-					
-					System.out.println("To deposit money, please specify the amount of which you would like to deposit below.");
-					do{
-					   
-							System.out.print("Enter deposit amount: ");
-					        withdraw = in.next();
-					        
-					        if(!withdraw.matches("[0-9.]*")){
-					        	System.out.println("Sorry that is not a valid entry. Numbers only. Please try again. ");
-					        }
-					   
-					}while(!withdraw.matches("[0-9.]*"));
-					wmoney = Double.parseDouble(withdraw);
-					
-					newMoney = bd.Withdraw(theCust, wmoney);
-					System.out.println("You have withdrew " + form.format(wmoney) +". Your current balance is "+ form.format(newMoney) + "!\n");
-				 
-				 break;
-				
-			 case 3 :
-				 
-				 System.out.println("You got " + form.format(bd.getMoney(theCust)));
-				 break;
-				 
-			 case 4 :
-				 	System.out.println("Thank you for choosing ShaneCorp Bank Inc!");
-					System.out.println("To create a new bank account you must first choose which type of account you want to open.");
-					System.out.println("Enter 1 for checkings or 2 for Savings. Enter 0 to quit:");
-					String typeacc = in.next();
-					
-					while(!typeacc.matches("[0-2.]*")){
-				        	System.out.println("Sorry that is not a valid entry. Please try again. ");
-				        	typeacc = in.next();
-				        }
-					b = BankAccount(a, typeacc);
-				 break;
-				 
-			 case 5 :
-				 menu();
-				 break;
-				 
-			 case 6 :
-				 break;
-				 
-			default:
-				break;
-			 }
+						
+								switch (typeacc) {
+								
+								case "1":
+									type = "Checkings";
+									input = theCust.getId();
+									bd.createAcc(type, input);
+									break;
+									
+								case "2":
+									type = "Savings";
+									input = theCust.getId();
+									bd.createAcc(type, input);
+									break;
+									
+								case "0":
+									break;
+									
+								default:
+									break;
+								}
+						System.out.println("Thank you for choosing ShaneCorp Inc. for your banking services!");
+						menu();
+					 break;
+					 
+				 case 5 :
+					 menu();
+					 break;
+					 
+				 case 6 :
+					 break;
+					 
+				default:
+					break;
+				 }
 			 
-			//After user makes selection and  finishes their task, they are prompted again for the next action.
-			System.out.println("What would you like to do?: ");
-			choice = in.nextInt();
+				//After user makes selection and  finishes their task, they are prompted again for the next action.
+				System.out.println("What would you like to do?: ");
+				choice = in.nextInt();
 			
 		  }while(choice != 6);
-		  }
+		  
+		  
+	}
 		 in.close();
 }
 
@@ -216,28 +291,6 @@ public static void menu() {
 	        System.out.println("6. Exit\n");
 	        
 }
-	
-public static Account BankAccount(Customer acc,String choice) {
-		
-		//Strings that will hold the users first name, last name, user name and password.
-		String type = "";
-		Scanner in = new Scanner(System.in);
-	   
-		
-		if(type == "1") {
-			type = "Checkings";
-		}
-		else if( type == "2") {
-		type = "Savings";
-	
-		}
-		
-		BankDAOImpl bank= new BankDAOImpl();
-		Account a = new Account(acc);
-		bank.createAcc(a);
-		in.close();
-		
-		return a;
-	}
+
 
 }

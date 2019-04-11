@@ -114,59 +114,56 @@ public class BankDAOImpl implements BankDAO {
 
 	}
 	
-	public Customer getAcctById(int id) {
+	public void createAcc(String type, int id) {
 		
-		return null;
+				PreparedStatement stmt = null;
+					
+				try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+			
+				//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
+				stmt = con.prepareStatement("INSERT INTO ACCOUNTS (ACCOUNT_TYPE, USER_ID) VALUES (?,?)");
+				stmt.setString(1, type);
+				stmt.setInt(2, id);
+				
+				
+				stmt.execute();
+				} catch (SQLException sqlEx) {
+		             sqlEx.printStackTrace();
+		             System.exit(1);  
+		      } catch (IOException e1) {
+				e1.printStackTrace();
+				} finally {
+			             try { 	//Ideally would close connection here.
+			                    stmt.close();  
+				             } catch (Exception e) {
+				                    System.exit(1); 
+				             }finally {
+							    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+							    
+							}
+		}
 	}
 	
-	public void createAcc(Account acc) {
-		
-			PreparedStatement stmt = null;
-			Customer user =  acc.getUser();
-			
-			
-			
-			
-			try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
-			
-			stmt = con.prepareStatement("INSERT INTO ACCOUNTS ( BALANCE, ACCOUNT_TYPE ,USER_ID) VALUES (?,?,?)");
-			stmt.setDouble(1, acc.getBalance());
-			stmt.setString(2, acc.getType());
-			stmt.setInt(3, user.getId());
-			
-			
-		    stmt.execute();
-           //More exception handling.
-	      } catch (SQLException sqlEx) {
-	             sqlEx.printStackTrace();
-	             System.exit(1);  
-	      } catch (IOException e1) {
-			e1.printStackTrace();
-			} finally {
-		             try { 	//Ideally would close connection here.
-		                    stmt.close();  
-			             } catch (Exception e) {
-			                    System.exit(1); 
-			             }
-		      }
-		
-	}
-	
-	public double getMoney(Customer c) {
-		double money = 5;
+	public double getMoney(Customer c, String type) {
+		double money = 0;
 		PreparedStatement stmt = null;
-		
+		boolean exist = true;
 		ResultSet rs = null;
+		
 		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
 			
-			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ?");
+			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 			stmt.setInt(1, c.getId());
-		   
-		    
+			stmt.setString(2, type);
 		    rs = stmt.executeQuery();
-		    while(rs.next()) {
-		    	money = rs.getDouble("BALANCE");
-		    }
+			if(rs.next()) {
+			    while(rs.next()) {
+			    	money = rs.getDouble("BALANCE");
+			    }
+			}else {
+			    	System.out.println("Account not found.");
+			    	return -404;
+			    }
            //More exception handling.
 	      } catch (SQLException sqlEx) {
 	             sqlEx.printStackTrace();
@@ -273,6 +270,7 @@ public class BankDAOImpl implements BankDAO {
 				newBal = money;
 		    }else {
 		    	System.out.println("You have less money than you wish to withdraw. Sorry!");
+		    	return money;
 		    }
            //More exception handling.
 	      } catch (SQLException sqlEx) {
@@ -353,6 +351,12 @@ public class BankDAOImpl implements BankDAO {
 		
 	}
 	
+	public Customer getAcctById(int id) {
+		
+		return null;
+	}
+	
+	
 	public void updateAcc(Account up) {
 		
 		
@@ -361,5 +365,41 @@ public class BankDAOImpl implements BankDAO {
 	public void deleteAcc(Account del) {
 		
 		
+	}
+
+	@Override
+	public boolean getAccountType(Customer c, String type) {
+		PreparedStatement stmt = null;
+		ResultSet  rs = null;
+		boolean exist = false;
+		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+	
+		//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
+		stmt = con.prepareStatement("SELECT ACOUNT_TYPE FROM ACCOUNTS WHERE ACCOUNT_TYPE = ? AND USER_ID = ?");
+		stmt.setString(1, type);
+		
+		rs = stmt.executeQuery();
+		 if (!rs.next()) {
+			  System.out.println("Wrong Username and Password.");
+			 } 
+			  else {
+				  exist = true;
+				   }
+		} catch (SQLException sqlEx) {
+             sqlEx.printStackTrace();
+             System.exit(1);  
+      } catch (IOException e1) {
+		e1.printStackTrace();
+		} finally {
+	             try { 	//Ideally would close connection here.
+	                    stmt.close();  
+		             } catch (Exception e) {
+		                    System.exit(1); 
+			             }finally {
+						    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+						    
+						}
+					}
+		return exist;
 	}
 }
