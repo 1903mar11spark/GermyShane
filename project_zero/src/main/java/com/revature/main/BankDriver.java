@@ -38,7 +38,9 @@ public class BankDriver {
 		  NumberFormat form = NumberFormat.getCurrencyInstance();
 		  String first, last, user =  "" , pass = "";
 		  int choice;
+		  boolean loggedIn = true;
 		  
+		  do {
 		  System.out.println("Welcome to ShaneCorp Bank! If you have an account enter 1, if you need to create an account enter 2");
 		  String num = in.nextLine();
 		  
@@ -191,27 +193,30 @@ public class BankDriver {
 				//3. View Checkings or Savings	
 				 case 3 :
 					 double bal = 0;
-					 int myAccount;
+					 String myAccount;
 					 String checkorsave = "";
 					 System.out.println("From which account balance whould you like to see? Enter 1 for Checkings, 2 for Savings, or 0 to exit. ");
-					 myAccount = in.nextInt();
-					 while(myAccount != 1 || myAccount != 2 || myAccount!= 0) {
-						 
-						 System.out.println("Please enter a valid entry. Enter 1 for Checkings, 2 for Savings, or 0 to exit.");
-						 myAccount = in.nextInt();
-						 if (myAccount == 1) {
+					 myAccount = in.next();
+					 	if(!myAccount.matches("[0-2.]*")) {
+							 do {
+								 
+								 System.out.println("Please enter a valid entry. Enter 1 for Checkings, 2 for Savings, or 0 to exit.");
+								 myAccount = in.next();
+								 if (myAccount.matches("[1]*")) {
+									 checkorsave = "Checkings";
+								 }else if (myAccount.matches("[2]*")) {
+									 checkorsave = "Savings";
+								 }
+							 }while(!myAccount.matches("[0-2]*") );
+					 	}
+					 	if (myAccount.matches("[1]*")) {
 							 checkorsave = "Checkings";
-						 }else if (myAccount == 2) {
+						 }else if (myAccount.matches("[2]*")) {
 							 checkorsave = "Savings";
 						 }
-					 }
-					 if (myAccount == 1) {
-						 checkorsave = "Checkings";
-					 }else if (myAccount == 2) {
-						 checkorsave = "Savings";
-					 }
 					 bal = bd.getMoney(theCust, checkorsave);
-					 if(myAccount != 0 || bal != -404) {
+					 
+					 if(myAccount.matches("[0]*") || bal != -404) {
 					 System.out.println("You have " + form.format(bal) + "in");
 					 }
 					 
@@ -274,15 +279,36 @@ public class BankDriver {
 		  }while(choice != 6);
 		  
 		  
-	}
+		 }
+		  String yesorno ;
+		  System.out.println("You have exited the menu. Would you like to log out? Enter Y for yes or N for no. A no will exit this program.");
+		  yesorno = in.next();
+		  yesorno = yesorno.toLowerCase();
+		  
+		  if(!yesorno.equals("y")  || !yesorno.equals("n")) {
+			  
+			  while(!yesorno.equals("y")  && !yesorno.equals("n")) {
+				  
+				  System.out.println("Please enter a valid answer");
+				  yesorno = in.next();
+				  System.out.println(yesorno);
+			  }
+		  }
+		  if(yesorno.equals("n")) {
+			  loggedIn = false;
+		  }else {
+			  loggedIn = true;
+			  num = "0";
+		  }
+	}while(loggedIn);
 		 in.close();
 }
 
 //Menu printed out in main.
 public static void menu() {
 			
-			System.out.println("Welcome to ShaneCorp Bank Inc!");
-			System.out.println("Select an option from the menu below:\n");
+			System.out.println("Welcome to the ShaneCorp Bank Inc Menu!\n");
+			System.out.println("Please select an option from the menu below:\n");
 			System.out.println("1. Deposit");
 	        System.out.println("2. Withdraw");
 	        System.out.println("3. View Account Balance");

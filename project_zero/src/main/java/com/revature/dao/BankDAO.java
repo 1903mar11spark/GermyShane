@@ -14,7 +14,6 @@ public interface BankDAO {
 	public double Withdraw(Customer c, double amount);
 	public double Deposit(Customer c, double amount);
 	public void createAcc(String type, int id);
-	public boolean getAccountType(Customer c, String type);
 	
 	public void updateCust(Customer bear);
 	public void deleteCust(Customer bear);

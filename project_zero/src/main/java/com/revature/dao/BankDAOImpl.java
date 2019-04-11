@@ -147,7 +147,6 @@ public class BankDAOImpl implements BankDAO {
 	public double getMoney(Customer c, String type) {
 		double money = 0;
 		PreparedStatement stmt = null;
-		boolean exist = true;
 		ResultSet rs = null;
 		
 		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
@@ -161,7 +160,7 @@ public class BankDAOImpl implements BankDAO {
 			    	money = rs.getDouble("BALANCE");
 			    }
 			}else {
-			    	System.out.println("Account not found.");
+			    	System.out.println("Account not found.\n");
 			    	return -404;
 			    }
            //More exception handling.
@@ -367,39 +366,5 @@ public class BankDAOImpl implements BankDAO {
 		
 	}
 
-	@Override
-	public boolean getAccountType(Customer c, String type) {
-		PreparedStatement stmt = null;
-		ResultSet  rs = null;
-		boolean exist = false;
-		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
 	
-		//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
-		stmt = con.prepareStatement("SELECT ACOUNT_TYPE FROM ACCOUNTS WHERE ACCOUNT_TYPE = ? AND USER_ID = ?");
-		stmt.setString(1, type);
-		
-		rs = stmt.executeQuery();
-		 if (!rs.next()) {
-			  System.out.println("Wrong Username and Password.");
-			 } 
-			  else {
-				  exist = true;
-				   }
-		} catch (SQLException sqlEx) {
-             sqlEx.printStackTrace();
-             System.exit(1);  
-      } catch (IOException e1) {
-		e1.printStackTrace();
-		} finally {
-	             try { 	//Ideally would close connection here.
-	                    stmt.close();  
-		             } catch (Exception e) {
-		                    System.exit(1); 
-			             }finally {
-						    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-						    
-						}
-					}
-		return exist;
-	}
 }
