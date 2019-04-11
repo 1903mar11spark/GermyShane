@@ -19,7 +19,7 @@ public class BankDriver {
 
 	public static void main(String[] args) {
 
-		
+		/*---------------------------------------------------------MAKE CONNECTION-----------------------------------------------------------------------------*/
 		  try 
 		  { 
 		  //Create connection with user. Do some exception handling.
@@ -34,6 +34,8 @@ public class BankDriver {
 		  {
 			  e.printStackTrace(); 
 		  }
+		  
+		  /*---------------------------------------------------------BEGINNING OF PROGRAM-----------------------------------------------------------------------------*/
 		  boolean loggedIn = true;
 		  
 		  //Instantiate Scanner, Customer and Account objects to use later. Create variable of type int for switch statement.
@@ -41,20 +43,39 @@ public class BankDriver {
 		  Customer a = new Customer() ;
 		  BankDAO bd = new BankDAOImpl();
 		  NumberFormat form = NumberFormat.getCurrencyInstance();
-		  String first, last, user =  "" , pass = "", adminUser = "", adminPass = "";
+		  String first, last, user =  "" , pass = "", adminUser = "", adminPass = "", auser = "", apword = "";
 		  int choice;
 		  
 		  //Master Do Loop - Ends after switch with a user input of N, Restarts with a user input of Y (Log out).
 		  do {
-		  System.out.println("Welcome to ShaneCorp Bank! If you have an account enter 1, if you need to create an account enter 2");
-		  System.out.println("If you are the Super User, please enter a 3.");
+		  System.out.println("\n<----------------------Welcome to ShaneCorp Bank!--------------------->\n");
+		  System.out.println(" @@@@@@@  @@                                           @@@@@@@@@@@@@@@");                                        
+		  System.out.println("@@@       @@                                        @@@             @@@");                                      
+		  System.out.println("@@@@@@    @@@@@@@  @@@@@@@   @@@@@@@  @@@@@@@      @@@                @@@");                                     
+		  System.out.println("   @@@@@  @@    @@ @@    @@  @@    @@ @@____@@    @@                    @@");                                    
+		  System.out.println("@@    @@@ @@    @@ @@    @@  @@    @@ @@          @@                    @@");                                    
+		  System.out.println(" @@@@@@@  @@    @@  @@@@@@@  @@    @@  @@@@@@     @@                    @@");                                   
+		  System.out.println("                                                  @@      @@@@@@@       @@");                                    
+		  System.out.println("   @@@@@                                          @@@     @@   @@      @@");                                     
+		  System.out.println(" @@@@       @@@@    @                              @@@    @@   @@     @@");                                      
+		  System.out.println(" @@        @@  @@   @@@@@ @@@@@@@                   @@@   @@   @@   @@@");                                       
+		  System.out.println(" @@        @@  @@   @@    @@    @@                   @@@   @@@@@   @@@");                                        
+		  System.out.println(" @@@@      @@  @@   @@    @@    @@                    @@@@@@@@@@@@@@@");                                        
+		  System.out.println("  @@@@@@@   @@@@    @@    @@@@@@@                     @@@_________@@@");                                         
+		  System.out.println("                          @@                          @@@         @@@");                                         
+		  System.out.println("                                                      @@@@@@@@@@@@@@@");                                          
+		  System.out.println("                                                        @@@@   @@@@");                                           
+		  System.out.println("                                                            @@@");
+		  System.out.println("If you have an account enter in a 1, or if you need to create an account enter in a 2");
+		  System.out.println("If you are the Super User, please enter in a 3. ");
+		  System.out.print("Entry: ");
 		  String num = in.next();
-		  
+		  /*---------------------------------------------------------BEGINNING OF EXISTING USER-----------------------------------------------------------------------------*/
 		  //if.1 Beginning
 		  if (num.contentEquals("1")) {
 			  
 					  //Scanner user = new Scanner(System.in);
-					  System.out.println("Input a username.");
+					  System.out.println("\nInput a username.");
 					  user = in.next();
 					  System.out.println("Input a Password.");	
 					  pass = in.next();
@@ -82,8 +103,9 @@ public class BankDriver {
 									
 							  }while( user.isEmpty() && pass.isEmpty()  || user == "0" || pass == "0");
 						  }
-			  
-			//if.1 Ends, else if .1 Begins  
+		 /*----------------------------------------------------ENDING OF EXISTING USER-----------------------------------------------------------------------------*/
+		/*-------------------------------------------------BEGINNING OF CREATE NEW ACCOUNT-----------------------------------------------------------------------------*/  
+		//if.1 Ends, else if .1 Begins  
 		  } else if (num.contentEquals("2")) {
 				
 				//Strings that will hold the users first name, last name, user name and password.				
@@ -138,15 +160,16 @@ public class BankDriver {
 				System.out.println("Your user account have been created.\n");
 				
 		  }//else if.1 Ends 
+		  /*-----------------------------------------------------END OF CREATE ACCOUNT-----------------------------------------------------------------------------*/
+		  /*----------------------------------------------------BEGINNING OF SUPER USER-----------------------------------------------------------------------------*/
 		  else if (num.contentEquals("3")) {
 		  System.out.println("Input an Admin username.");
-		  adminUser = in.nextLine();
+		  adminUser = in.next();
 		  System.out.println("Input a Password.");	
-		  adminPass = in.nextLine();
+		  adminPass = in.next();
 		  Properties prop = new Properties();
 		  InputStream file = null;
-		  String auser = "";
-		  String apword = "";
+		  
 		  try {
 		      
 			  file = new FileInputStream("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
@@ -174,7 +197,7 @@ public class BankDriver {
 					 
 				  case 1 :
 					  	List<Superuser> superU = bd.getSuperuser();
-						
+					  	System.out.println("------------------------ MASTER LIST ------------------------\n");
 						for(Superuser s : superU) {
 							System.out.println(s);
 						}
@@ -183,10 +206,10 @@ public class BankDriver {
 				  case 2 :
 					  	System.out.println();
 						 //create
-					  	System.out.println("---------- SUPER USER ACCOUNT CREATION ----------\n");
+					  	System.out.println("------------------------ SUPER USER ACCOUNT CREATION ------------------------\n");
 					  	System.out.println("Enter the first and last name of the account you would like to create. Click enter after each entry.");
-						first = in.nextLine();
-						last = in.nextLine();
+						first = in.next();
+						last = in.next();
 						
 						if( first.isEmpty() || last.isEmpty() ) {
 							
@@ -194,8 +217,8 @@ public class BankDriver {
 								
 								System.out.println("Error! You must enter a valid First AND Last name! Please try again."
 										+ "Click enter after each entry.");
-								first = in.nextLine();
-								last = in.nextLine();
+								first = in.next();
+								last = in.next();
 								
 								 
 								}while( first.isEmpty() && last.isEmpty() );
@@ -208,10 +231,10 @@ public class BankDriver {
 						
 						System.out.println("Now you create the user login. Associated with the new User.");
 						System.out.print("Please enter the desired username: ");
-						user = in.nextLine();
+						user = in.next();
 						
 						System.out.print("Now enter the desired password: ");
-						pass = in.nextLine();
+						pass = in.next();
 						
 						if( user.isEmpty() || pass.isEmpty() ) {
 							
@@ -219,8 +242,8 @@ public class BankDriver {
 								
 								System.out.println("Error! You must enter a VALID and UNIQUE username and password! Please try again."
 										+ "Click enter after each entry.");
-								user = in.nextLine();
-								pass = in.nextLine();
+								user = in.next();
+								pass = in.next();
 								
 								}while( user.isEmpty() && pass.isEmpty() );
 						}
@@ -232,6 +255,7 @@ public class BankDriver {
 						System.out.println("The user account for "+first+" "+last+" has been created.\n");
 						 break;
 						 
+				  //Update a User		 
 				  case 3 :
 					  	int ud;
 					  	String fname, lname, uname, pword =  "";
@@ -239,33 +263,41 @@ public class BankDriver {
 					  	System.out.println("Enter the User ID for the account you would like to update.");
 					  	ud = in.nextInt();
 					  	
-					  	System.out.println("Enter in the new name you would like for the account.");
+					  	System.out.println("Enter in the username you would like for the account.");
 					  	fname = in.next();
 					  	
-					  	System.out.println("Enter in the last name you would like for the account.");
+					  	System.out.println("Enter in the password you would like for the account.");
 					  	lname = in.next();
 					  	
-					  	System.out.println("Enter in the username you would like for the account.");
+					  	System.out.println("Enter in the first name you would like for the account.");
 					  	uname = in.next();
 					  	
-					  	System.out.println("Enter in the password you would like for the account.");
+					  	System.out.println("Enter in the last name you would like for the account.");
 					  	pword = in.next();
 					  	
 					  	bd.updateSuper(ud, fname, lname, uname, pword);
 						break;
+						
+				  //Delete a User	
 				  case 4 :
-					  //delete
+					  int i;
+					  	System.out.println("\nEnter the User ID for the user you would like to delete.");
+					  	i = in.nextInt();
+					  	bd.deleteSuper(i);
 					  	break;
-				}System.out.println("What would you like to do?: ");
+					  	
+				}
+				System.out.println("What would you like to do?: ");
 				choice = in.nextInt();
 			  } while(choice != 6);
-			  
+			   
 		  } else {
-			  System.out.println("Whoops");
-			  
+			  System.out.println("Whoops");   
 		  }
 
-		  }
+		}
+		  /*---------------------------------------------------------END OF SUPER USER-----------------------------------------------------------------------------*/
+		  
 		  if(user == "0" || pass == "0") {System.out.println("Goodbye!"); System.exit(0);}
 			  
 		  Customer theCust = bd.getCustomer(user,pass);
@@ -275,7 +307,9 @@ public class BankDriver {
 		  System.out.println("How can we assist you today? Enter a number between 1 and 6:");
 		  choice = in.nextInt();
 		  
+		  /*---------------------------------------------------------BEGINNING OF EXISTING USER MENU-----------------------------------------------------------------------------*/
 		  //A do while loop for the menu. Exits when user enters the number 6. Offers the user 5 other choices.
+		  if(adminUser.equals(auser) && adminPass.contentEquals(apword)) {
 		  do {
 			  
 				 switch (choice) {
@@ -375,7 +409,7 @@ public class BankDriver {
 					 
 					menu();
 					 break;
-				//3. View Checkings or Savings	
+				//3. View Checking or Savings	
 				 case 3 :
 					 double bal = 0;
 					 String myAccount;
@@ -407,12 +441,13 @@ public class BankDriver {
 					 
 					 menu();
 					 break;
-					 
+					
+				//Create new Account	 
 				 case 4 :
 					 	String type = "";
 					 	int input = 0;
 					 	
-					 	System.out.println("Thank you for choosing ShaneCorp Bank Inc!");
+					 	System.out.println("Thank you for choosing to bank with ShaneCorp Bank Inc!");
 						System.out.println("To create a new bank account you must first choose which type of account you want to open.");
 						System.out.println("Enter 1 for checkings or 2 for Savings. Enter 0 to quit:");
 						String typeacc = in.next();
@@ -445,12 +480,18 @@ public class BankDriver {
 						System.out.println("Thank you for choosing ShaneCorp Inc. for your banking services!");
 						menu();
 					 break;
-					 
+				//Display Menu	 
 				 case 5 :
 					 menu();
 					 break;
-					 
 				 case 6 :
+					 System.out.println("Are you sure you want to delete your empty bank accounts?");
+					 
+					 
+					 bd.userDeletion(theCust);
+					 break;
+				//Exit	 
+				 case 7 :
 					 break;
 					 
 				default:
@@ -461,57 +502,64 @@ public class BankDriver {
 				System.out.println("What would you like to do?: ");
 				choice = in.nextInt();
 			
-		  }while(choice != 6);
-		  
-		  
+		  }while(choice != 7);
 		 }
+		  /*---------------------------------------------------------END OF EXISTING USER MENU-----------------------------------------------------------------------------*/	  
+		 }
+		  /*------------------------------------------------------BEGINNING OFUSER LOG OUT OPTION-----------------------------------------------------------------------------*/
+		  
 		  String yesorno ;
 		  System.out.println("You have exited the menu. Would you like to log out? Enter Y for yes or N for no. A no will exit this program.");
 		  yesorno = in.next();
 		  yesorno = yesorno.toLowerCase();
 		  
-		  if(!yesorno.equals("y")  || !yesorno.equals("n")) {
-			  
-			  while(!yesorno.equals("y")  && !yesorno.equals("n")) {
+			  if(!yesorno.equals("y")  || !yesorno.equals("n")) {
 				  
-				  System.out.println("Please enter a valid answer");
-				  yesorno = in.next();
-				  System.out.println(yesorno);
+				  while(!yesorno.equals("y")  && !yesorno.equals("n")) {
+					  
+					  System.out.println("Please enter a valid answer");
+					  yesorno = in.next();
+					  System.out.println(yesorno);
+				  }
 			  }
-		  }
-		  if(yesorno.equals("n")) {
-			  loggedIn = false;
-			  System.out.println("You have exited the program. Goodbye!");
-		  }else {
-			  loggedIn = true;
-			  System.out.println("You have logged out. You will soon be prompted to either log-in or create a new Customer account.\n");
-		  }
+			  
+			  //Checks 
+			  if(yesorno.equals("n")) {
+				  loggedIn = false;
+				  System.out.println("You have exited the program. Goodbye!");
+			  }else {
+				  loggedIn = true;
+				  System.out.println("You have logged out. You will soon be prompted to either log-in or create a new Customer account.\n");
+			  }
 	
 		 }while(loggedIn);
+		  /*---------------------------------------------------------END OF USER LOGOUT OPTION-----------------------------------------------------------------------------*/
+		  /*---------------------------------------------------------------END OF PROGRAM-----------------------------------------------------------------------------*/
 		  in.close();
 }
 
 //Menu printed out in main.
 	public static void menu() {
 			
-			System.out.println("Welcome to the ShaneCorp Bank Inc Menu!\n");
-			System.out.println("Please select an option from the menu below:\n");
-			System.out.println("1. Deposit");
-	        System.out.println("2. Withdraw");
-	        System.out.println("3. View Account Balance");
-	        System.out.println("4. Create Savings/Checkings Account");
-	        System.out.println("5. Menu");
-	        System.out.println("6. Exit\n");
+			System.out.println("\n<-----------Welcome to the ShaneCorp Bank Inc Menu!----------->\n");
+			System.out.println("--------Please select an option from the menu below:--------");
+			System.out.println("<--------------------1. Deposit -------------------->");
+	        System.out.println("<--------------------2. Withdraw -------------------->");
+	        System.out.println("<--------------------3. View Account Balance -------------------->");
+	        System.out.println("<--------------------4. Create Savings/Checkings Account-------------------->");
+	        System.out.println("<--------------------5. Menu-------------------->");
+	        System.out.println("<--------------------6. Delete Empty Accounts-------------------->\n");
+	        System.out.println("<--------------------7. Exit Menu-------------------->\n");
 	        
 }
-	
+	//Super User Menu
 	public static void adminMenu() {
 	
-	System.out.println("Welcome Supreme Shane!\n");
-	System.out.println("1. View all Users");
-    System.out.println("2. Create an Account");
-    System.out.println("3. Update an Account");
-    System.out.println("4. Delete an Account");
+			System.out.println("<-----------------Welcome Supreme Shane!\n-------------------->");
+			System.out.println("--------------------1. View all User--------------------");
+		    System.out.println("--------------------2. Create an Account--------------------");
+		    System.out.println("--------------------3. Update an Account--------------------");
+		    System.out.println("--------------------4. Delete an Account--------------------");
 }
 
 

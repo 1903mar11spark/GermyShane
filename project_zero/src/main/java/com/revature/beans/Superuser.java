@@ -77,7 +77,7 @@ public class Superuser {
 	}
 	@Override
 	public String toString() {
-		return "Superuser [id=" + id + ", fname=" + fname + ", lname=" + lname + ", username=" + username
-				+ ", password=" + password + ", accId=" + accId + ", balance=" + balance + ", type=" + type + "]";
+		return "Superuser [Super User ID: " + id + ", First Name: " + fname + ", Last Name: " + lname + ", Username: " + username
+				+ ", Password: " + password + ", Account ID:" + accId + ", Balance:" + balance + ", Account Type:" + type + "]";
 	}
 }
