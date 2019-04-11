@@ -9,12 +9,16 @@ public class Customer {
 	
 	public Customer() {
 		super();
-		// TODO Auto-generated constructor stub
+	
 	}
-	public Customer(int id) {
+	public Customer(String fname, String lname, String username, String password) {
 		super();
-		
+		this.fname = fname;
+		this.lname = lname;
+		this.username = username;
+		this.password = password;
 	}
+	
 	public Customer(int id, String fname, String lname, String username, String password) {
 		super();
 		this.id = id;
@@ -23,9 +27,8 @@ public class Customer {
 		this.username = username;
 		this.password = password;
 	}
-	
 	public int getId() {
-		return id;
+		return this.id;
 	}
 	
 	public void setId(int id) {
@@ -33,7 +36,7 @@ public class Customer {
 	}
 	
 	public String getFname() {
-		return fname;
+		return this.fname;
 	}
 	
 	public void setFname(String fname) {
@@ -63,7 +66,13 @@ public class Customer {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	@Override
+	public String toString() {
+		return "Customer [id = " + this.id + ", First Name = " + this.fname + ", Last Name = " + this.lname + ", Username = " 
+				+ this.username + ", password = " + this.password +"]";
+	}
 
+	
 	
 
 }
