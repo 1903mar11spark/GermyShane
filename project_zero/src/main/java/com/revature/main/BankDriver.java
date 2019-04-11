@@ -1,11 +1,15 @@
 package com.revature.main;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 
 import com.revature.beans.*;
@@ -40,9 +44,11 @@ public class BankDriver {
 		  Customer a = new Customer();
 		  BankDAO bd = new BankDAOImpl();
 		  String first, last, user =  "" , pass = "";
+		  String adminUser = "";
+		  String adminPass = "";
 		  int choice;
 		  
-		  System.out.println("Welcome to ShaneCorp Bank! If you have an account enter 1, if you need to create an account enter 2");
+		  System.out.println("Welcome to ShaneCorp Bank! If you have an account enter 1, if you need to create an account enter 2, if you are an Admin enter 3");
 		  String num = in.nextLine();
 		  
 		  if (num.contentEquals("1")) {
@@ -98,9 +104,88 @@ public class BankDriver {
 				}
 				
 				//Take user input and create the user object. Pass Customer object into BankDAOImpl which implements the BankDAO interface.
-				Customer cust = new Customer(first,last,user, pass);
-				a = cust;
+				//Customer cust = new Customer(first,last,user, pass);
+				//a = cust;
 				System.out.println("Your user account have been created.");
+		  } else if (num.contentEquals("3")) {
+			  System.out.println("Input an Admin username.");
+			  adminUser = in.nextLine();
+			  System.out.println("Input a Password.");	
+			  adminPass = in.nextLine();
+			  Properties prop = new Properties();
+			  InputStream file = null;
+			  String auser = "";
+			  String apword = "";
+			  try {
+			      
+				  file = new FileInputStream("//Users//shaneflynn//GitRepos//Bank//project_zero//src//main//java//resources//Connection.prop");
+			     
+				  prop.load(file);
+			     
+			      auser = prop.getProperty("Adminuser");
+			      apword = prop.getProperty("Adminpass");
+			    		 
+
+			  } 
+			  catch (IOException ex) {
+			      ex.printStackTrace();
+			  }
+			  
+			  if(adminUser.equals(auser) && adminPass.contentEquals(apword)) {
+				  
+				  adminMenu();
+				  System.out.println("How can we assist you today? Enter a number between 1 and 4:");
+				  choice = in.nextInt();
+				  
+				  do {
+					  
+					  switch (choice) {
+						 
+					  case 1 :
+						  	List<Superuser> superU = bd.getSuperuser();
+							
+							for(Superuser s : superU) {
+								System.out.println(s);
+							}
+							 break;
+							 
+					  case 2 :
+						  	System.out.println();
+							 //create
+							 break;
+							 
+					  case 3 :
+						  	int ud;
+						  	String fname, lname, uname, pword =  "";
+						  	
+						  	System.out.println("Enter the User ID for the account you would like to update.");
+						  	ud = in.nextInt();
+						  	
+						  	System.out.println("Enter in the new name you would like for the account.");
+						  	fname = in.next();
+						  	
+						  	System.out.println("Enter in the last name you would like for the account.");
+						  	lname = in.next();
+						  	
+						  	System.out.println("Enter in the username you would like for the account.");
+						  	uname = in.next();
+						  	
+						  	System.out.println("Enter in the password you would like for the account.");
+						  	pword = in.next();
+						  	
+						  	bd.updateSuper(ud, fname, lname, uname, pword);
+							break;
+					  case 4 :
+						  //delete
+						  	break;
+					}System.out.println("What would you like to do?: ");
+					choice = in.nextInt();
+				  } while(choice != 6);
+				  
+			  } else {
+				  System.out.println("Whoops");
+				  
+			  }
 		  }
 		  
 		  if (bd.getCustByLogin(user, pass)) {
@@ -248,6 +333,13 @@ public class BankDriver {
         System.out.println("5. Menu");
         System.out.println("6. Exit\n");
         
+	}
+	public static void adminMenu() {
+		System.out.println("Welcome Supreme Shane!\n");
+		System.out.println("1. View all Users");
+        System.out.println("2. Create an Account");
+        System.out.println("3. Update an Account");
+        System.out.println("4. Delete an Account");
 	}
 	
 	public static void Deposit() {

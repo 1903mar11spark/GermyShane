@@ -1,7 +1,7 @@
 package com.revature.beans;
 
 public class Account {
-	private int accId;
+	/*private int accId;
 	private Customer user;
 	private double balance = 0;
 	private String type = "Checkings";
@@ -59,5 +59,5 @@ public class Account {
 	}
 
 	
-
+*/
 }

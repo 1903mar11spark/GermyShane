@@ -1,3 +1,7 @@
 url=jdbc:oracle:thin:@shanecorp.cveb765hzvrd.us-east-2.rds.amazonaws.com:1521:orcl
 username=Admin
 password=harrykane33
+
+
+Adminuser=supremeshane
+Adminpass=shane
