@@ -7,23 +7,26 @@ import com.revature.beans.*;
 public interface BankDAO {
 
 	public List<Customer> getCustomer();
+	public List<Superuser> getSuperuser();
+	
 	public void createCust(Customer bear);
+	public void createAcc(String type, int id);
+	
 	public Customer getCustomer(String user, String pass);
-	public double getMoney(Customer d, String type);
 	public boolean getCustByLogin(String first, String second);
+	
+	public double getMoney(Customer d, String type);
 	public double Withdraw(Customer c, double amount);
 	public double Deposit(Customer c, double amount);
-	public void createAcc(String type, int id);
+	
+	
+	
+	public void updateSuper(int id, String fname, String lname, String username, String password);
 	
 	public void updateCust(Customer bear);
 	public void deleteCust(Customer bear);
 	
 	
-	public List<Account> getAccount();
-	public Customer getAcctById(int id);
-	
-	public void updateAcc(Account up);
-	public void deleteAcc(Account del);
 	
 	
 	

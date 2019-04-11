@@ -48,10 +48,6 @@ public class BankDAOImpl implements BankDAO {
 			return cust;
 	}
 	
-	public List<Account> getAccount(){
-		
-		return null;
-	}
 
 	
 	public void createCust(Customer user) {
@@ -155,13 +151,13 @@ public class BankDAOImpl implements BankDAO {
 			stmt.setInt(1, c.getId());
 			stmt.setString(2, type);
 		    rs = stmt.executeQuery();
-			if(rs.next()) {
-			    while(rs.next()) {
-			    	money = rs.getDouble("BALANCE");
-			    }
-			}else {
-			    	System.out.println("Account not found.\n");
+			if(!rs.next()) {
+			    System.out.println("Account not found.\n");
 			    	return -404;
+				}else {
+				    	while(rs.next()) {
+				    	money = rs.getDouble("BALANCE");
+				    }
 			    }
            //More exception handling.
 	      } catch (SQLException sqlEx) {
@@ -350,19 +346,77 @@ public class BankDAOImpl implements BankDAO {
 		
 	}
 	
-	public Customer getAcctById(int id) {
-		
-		return null;
+
+
+	@Override
+	public List<Superuser> getSuperuser() {
+		List<Superuser> superU = new ArrayList<Superuser>();
+		try 
+		  { 
+		  Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		  String sql = "SELECT * FROM BANKUSER FULL JOIN ACCOUNTS ON BANKUSER.USER_ID = ACCOUNTS.USER_ID";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				int id = rs.getInt("USER_ID");
+				String username = rs.getString("USERNAME");
+				String password = rs.getString("PASSWORD");
+				String fName = rs.getString("FIRST_NAME");
+				String lName = rs.getString("LAST_NAME");
+				int accId = rs.getInt("ACCOUNT_ID");
+				double balance = rs.getDouble("BALANCE");
+				String type = rs.getString("ACCOUNT_TYPE");
+				superU.add(new Superuser(id ,username, password, fName, lName, accId, balance, type));
+		  }
+		  }
+		  catch (SQLException e) 
+		  { 
+			  e.printStackTrace(); 
+		  }
+		  catch (IOException e) 
+		  {
+			  e.printStackTrace(); 
+		  } 
+			return superU;
 	}
-	
-	
-	public void updateAcc(Account up) {
-		
-		
-	}
-	
-	public void deleteAcc(Account del) {
-		
+
+
+
+	@Override
+	public void updateSuper(int id, String fname, String lname, String username, String password) {
+		PreparedStatement stmt = null;
+        //Some exception handling with connecting to a file.
+		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+			
+			//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
+			stmt = con.prepareStatement("UPDATE BANKUSER\n" + 
+										"SET USERNAME = ?, PASSWORD = ?, FIRST_NAME = ?, LAST_NAME =?\n" + 
+										"WHERE USER_ID = ?");
+			stmt.setString(1, username);
+			stmt.setString(2, password);
+			stmt.setString(3, fname);
+			stmt.setString(4, lname);
+			stmt.setInt(5, id);
+			
+		    stmt.execute();
+           //More exception handling.
+	      } catch (SQLException sqlEx) {
+	             sqlEx.printStackTrace();
+	             System.exit(1);  
+	      } catch (IOException e1) {
+			e1.printStackTrace();
+			} finally {
+		             try { 	//Ideally would close connection here.
+		                    stmt.close();  
+			             } catch (Exception e) {
+			                    System.exit(1); 
+			             } finally {
+			 			    //try { rs.close(); } catch (Exception e) { /* ignored */ }
+						    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+						    
+						}
+		      }
+
 		
 	}
 

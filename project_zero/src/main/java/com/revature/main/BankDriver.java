@@ -1,10 +1,14 @@
 package com.revature.main;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 
 import com.revature.beans.*;
@@ -30,36 +34,37 @@ public class BankDriver {
 		  {
 			  e.printStackTrace(); 
 		  }
+		  boolean loggedIn = true;
 		  
 		  //Instantiate Scanner, Customer and Account objects to use later. Create variable of type int for switch statement.
 		  Scanner in = new Scanner(System.in);
 		  Customer a = new Customer() ;
 		  BankDAO bd = new BankDAOImpl();
 		  NumberFormat form = NumberFormat.getCurrencyInstance();
-		  String first, last, user =  "" , pass = "";
+		  String first, last, user =  "" , pass = "", adminUser = "", adminPass = "";
 		  int choice;
-		  boolean loggedIn = true;
 		  
+		  //Master Do Loop - Ends after switch with a user input of N, Restarts with a user input of Y (Log out).
 		  do {
 		  System.out.println("Welcome to ShaneCorp Bank! If you have an account enter 1, if you need to create an account enter 2");
-		  String num = in.nextLine();
+		  String num = in.next();
 		  
 		  //if.1 Beginning
 		  if (num.contentEquals("1")) {
 			  
 					  //Scanner user = new Scanner(System.in);
 					  System.out.println("Input a username.");
-					  user = in.nextLine();
+					  user = in.next();
 					  System.out.println("Input a Password.");	
-					  pass = in.nextLine();
+					  pass = in.next();
 					  
 					  if(user.isEmpty() || pass.isEmpty()) {
 						  do { 
 							  System.out.println("Error! You must enter a First AND Last name! Please try again.");
 							  System.out.println("Input a username.");
-							  user = in.nextLine();
+							  user = in.next();
 							  System.out.println("Input a Password.");	
-							  pass = in.nextLine();
+							  pass = in.next();
 								
 								}while( user.isEmpty() && pass.isEmpty() );
 					  }
@@ -131,7 +136,86 @@ public class BankDriver {
 				bd.createCust(a);
 				System.out.println("Your user account have been created.\n");
 				
-		  }//else if.1 Ends
+		  }//else if.1 Ends else if (num.contentEquals("3")) {
+		  System.out.println("Input an Admin username.");
+		  adminUser = in.nextLine();
+		  System.out.println("Input a Password.");	
+		  adminPass = in.nextLine();
+		  Properties prop = new Properties();
+		  InputStream file = null;
+		  String auser = "";
+		  String apword = "";
+		  try {
+		      
+			  file = new FileInputStream("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		     
+			  prop.load(file);
+		     
+		      auser = prop.getProperty("Adminuser");
+		      apword = prop.getProperty("Adminpass");
+		    		 
+
+		  } 
+		  catch (IOException ex) {
+		      ex.printStackTrace();
+		  }
+		  
+		  if(adminUser.equals(auser) && adminPass.contentEquals(apword)) {
+			  
+			  adminMenu();
+			  System.out.println("How can we assist you today? Enter a number between 1 and 4:");
+			  choice = in.nextInt();
+			  
+			  do {
+				  
+				  switch (choice) {
+					 
+				  case 1 :
+					  	List<Superuser> superU = bd.getSuperuser();
+						
+						for(Superuser s : superU) {
+							System.out.println(s);
+						}
+						 break;
+						 
+				  case 2 :
+					  	System.out.println();
+						 //create
+						 break;
+						 
+				  case 3 :
+					  	int ud;
+					  	String fname, lname, uname, pword =  "";
+					  	
+					  	System.out.println("Enter the User ID for the account you would like to update.");
+					  	ud = in.nextInt();
+					  	
+					  	System.out.println("Enter in the new name you would like for the account.");
+					  	fname = in.next();
+					  	
+					  	System.out.println("Enter in the last name you would like for the account.");
+					  	lname = in.next();
+					  	
+					  	System.out.println("Enter in the username you would like for the account.");
+					  	uname = in.next();
+					  	
+					  	System.out.println("Enter in the password you would like for the account.");
+					  	pword = in.next();
+					  	
+					  	bd.updateSuper(ud, fname, lname, uname, pword);
+						break;
+				  case 4 :
+					  //delete
+					  	break;
+				}System.out.println("What would you like to do?: ");
+				choice = in.nextInt();
+			  } while(choice != 6);
+			  
+		  } else {
+			  System.out.println("Whoops");
+			  
+		  }
+
 		  
 		  if(user == "0" || pass == "0") {System.out.println("Goodbye!"); System.exit(0);}
 			  
@@ -194,7 +278,7 @@ public class BankDriver {
 				 case 3 :
 					 double bal = 0;
 					 String myAccount;
-					 String checkorsave = "";
+					 String checkorsave = "Checking";
 					 System.out.println("From which account balance whould you like to see? Enter 1 for Checkings, 2 for Savings, or 0 to exit. ");
 					 myAccount = in.next();
 					 	if(!myAccount.matches("[0-2.]*")) {
@@ -203,21 +287,21 @@ public class BankDriver {
 								 System.out.println("Please enter a valid entry. Enter 1 for Checkings, 2 for Savings, or 0 to exit.");
 								 myAccount = in.next();
 								 if (myAccount.matches("[1]*")) {
-									 checkorsave = "Checkings";
+									 checkorsave = "Checking";
 								 }else if (myAccount.matches("[2]*")) {
 									 checkorsave = "Savings";
 								 }
 							 }while(!myAccount.matches("[0-2]*") );
 					 	}
 					 	if (myAccount.matches("[1]*")) {
-							 checkorsave = "Checkings";
+							 checkorsave = "Checking";
 						 }else if (myAccount.matches("[2]*")) {
 							 checkorsave = "Savings";
 						 }
 					 bal = bd.getMoney(theCust, checkorsave);
 					 
 					 if(myAccount.matches("[0]*") || bal != -404) {
-					 System.out.println("You have " + form.format(bal) + "in");
+					 System.out.println("You have " + form.format(bal) + " in your " + checkorsave + " account.");
 					 }
 					 
 					 menu();
@@ -237,10 +321,10 @@ public class BankDriver {
 					        	typeacc = in.next();
 					        }
 						
-								switch (typeacc) {
+							switch (typeacc) {
 								
 								case "1":
-									type = "Checkings";
+									type = "Checking";
 									input = theCust.getId();
 									bd.createAcc(type, input);
 									break;
@@ -296,16 +380,18 @@ public class BankDriver {
 		  }
 		  if(yesorno.equals("n")) {
 			  loggedIn = false;
+			  System.out.println("You have exited the program. Goodbye!");
 		  }else {
 			  loggedIn = true;
-			  num = "0";
+			  System.out.println("You have logged out. You will soon be prompted to either log-in or create a new Customer account.\n");
 		  }
-	}while(loggedIn);
-		 in.close();
+	
+		 }while(loggedIn);
+		  in.close();
 }
 
 //Menu printed out in main.
-public static void menu() {
+	public static void menu() {
 			
 			System.out.println("Welcome to the ShaneCorp Bank Inc Menu!\n");
 			System.out.println("Please select an option from the menu below:\n");
@@ -316,6 +402,14 @@ public static void menu() {
 	        System.out.println("5. Menu");
 	        System.out.println("6. Exit\n");
 	        
+}
+	
+	public static void adminMenu() {
+	System.out.println("Welcome Supreme Shane!\n");
+	System.out.println("1. View all Users");
+    System.out.println("2. Create an Account");
+    System.out.println("3. Update an Account");
+    System.out.println("4. Delete an Account");
 }
 
 
