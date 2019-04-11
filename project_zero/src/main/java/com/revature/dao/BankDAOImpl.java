@@ -1,7 +1,7 @@
 package com.revature.dao;
 
 import java.io.IOException;
-
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -189,7 +189,7 @@ public class BankDAOImpl implements BankDAO {
 	}
 	
 	@Override
-	public double getMoney(int id) {
+	public double getBalanceById(int id) {
 		PreparedStatement myStmt = null;
 		double x = 0;
 		ResultSet rs = null;
@@ -289,6 +289,66 @@ public class BankDAOImpl implements BankDAO {
 						}
 		      }
 	}
+	public void deleteSuper(int id) {
+		double x = getBalanceById(id);
+		if (x == 0) {
+			CallableStatement stmt = null;
+	        //Some exception handling with connecting to a file.
+			try ( Connection con = ConnectionUtil.getConnectionFromFile("//Users//shaneflynn//GitRepos//Bank//project_zero//src//main//java//resources//Connection.prop")) {
+				stmt = con.prepareCall("{call SP_DELETE_USER_AND_ACCOUNT (?)}");
+				stmt.setInt(1, id);
+				
+				
+			    stmt.execute();
+			} catch (SQLException sqlEx) {
+	             sqlEx.printStackTrace();
+	             System.exit(1);  
+	      } catch (IOException e1) {
+			e1.printStackTrace();
+			} finally {
+		             try { 	//Ideally would close connection here.
+		                    stmt.close();  
+			             } catch (Exception e) {
+			                    System.exit(1); 
+			             } finally {
+			 			    //try { rs.close(); } catch (Exception e) { /* ignored */ }
+						    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+						    try { con.close(); } catch (Exception e) { /* ignored */ }
+						}
+		      }
+			
+		} else if (x > 0){
+			System.out.println("Cannot delete an account that has money in balance.");
+		
+		} else {
+			CallableStatement stmt = null;
+	        //Some exception handling with connecting to a file.
+			try ( Connection con = ConnectionUtil.getConnectionFromFile("//Users//shaneflynn//GitRepos//Bank//project_zero//src//main//java//resources//Connection.prop")) {
+				stmt = con.prepareCall("{call SP_DELETE_USER (?)}");
+				stmt.setInt(1, id);
+				
+				
+			    stmt.execute();
+			} catch (SQLException sqlEx) {
+	             sqlEx.printStackTrace();
+	             System.exit(1);  
+	      } catch (IOException e1) {
+			e1.printStackTrace();
+			} finally {
+		             try { 	//Ideally would close connection here.
+		                    stmt.close();  
+			             } catch (Exception e) {
+			                    System.exit(1); 
+			             } finally {
+			 			    //try { rs.close(); } catch (Exception e) { /* ignored */ }
+						    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+						    try { con.close(); } catch (Exception e) { /* ignored */ }
+						}
+		      }
+		}
+			
+	}
+	
 
 	
 	

@@ -21,6 +21,7 @@ public interface BankDAO {
 	//public void updateAcc(Account up);
 	//public void deleteAcc(Account del);
 	public int getUserId(String user, String pass);
-	public double getMoney(int id);
+	public double getBalanceById(int id);
 	public void updateSuper(int id, String fname, String lname, String username, String password); 
+	public void deleteSuper(int id);
 }

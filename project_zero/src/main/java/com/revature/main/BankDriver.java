@@ -176,7 +176,10 @@ public class BankDriver {
 						  	bd.updateSuper(ud, fname, lname, uname, pword);
 							break;
 					  case 4 :
-						  //delete
+						  	int i;
+						  	System.out.println("Enter the User ID for the user you would like to delete.");
+						  	i = in.nextInt();
+						  	bd.deleteSuper(i);
 						  	break;
 					}System.out.println("What would you like to do?: ");
 					choice = in.nextInt();
@@ -208,9 +211,9 @@ public class BankDriver {
 				 break;
 				 
 			 case 3 :
-				 int inputs = 0;
+				 /*int inputs = 0;
 				 inputs = bd.getUserId(user, pass);
-				 System.out.println(bd.getMoney(inputs));
+				 System.out.println(bd.getMoney(inputs));*/
 				 break;
 				 
 			 case 4 :
@@ -396,6 +399,6 @@ public class BankDriver {
 	}
 	
 	public static void getBal() {
-	
+		
 	}
 }
