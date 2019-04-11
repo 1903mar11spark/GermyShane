@@ -141,7 +141,7 @@ public class BankDAOImpl implements BankDAO {
 	}
 	
 	public double getMoney(Customer c, String type) {
-		double money = 0;
+		double money = -404 ;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		
@@ -151,14 +151,17 @@ public class BankDAOImpl implements BankDAO {
 			stmt.setInt(1, c.getId());
 			stmt.setString(2, type);
 		    rs = stmt.executeQuery();
-			if(!rs.next()) {
+		    
+
+		    while(rs.next()) {
+		    	money = rs.getDouble("BALANCE");
+
+		    }
+	    	if(money == -404) {
 			    System.out.println("Account not found.\n");
 			    	return -404;
-				}else {
-				    	while(rs.next()) {
-				    	money = rs.getDouble("BALANCE");
-				    }
-			    }
+				}
+			    
            //More exception handling.
 	      } catch (SQLException sqlEx) {
 	             sqlEx.printStackTrace();
@@ -181,35 +184,36 @@ public class BankDAOImpl implements BankDAO {
 		return money;
 	}
 	
-	public double Deposit(Customer c, double amount) {
+	public double Deposit(Customer c, double amount, String type) {
 
-		double money = 0, newBal = 0;
+		double money = 0, newBal = 0, error = -404;
 		PreparedStatement stmt = null, stmt2;
 		
 		ResultSet rs = null, rs2 = null;
 		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
 			
-			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ?");
+			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 			stmt.setInt(1, c.getId());
-		 
+			stmt.setString(2, type);
 		    rs = stmt.executeQuery();
 		    while(rs.next()) {
 		    	money = rs.getDouble("BALANCE");
+		    	error = money;
 		    }
 		    
-		    
+		    if(error == -404) {
+			    System.out.println("You dont have a "+type+" account to deposit into.\n");
+			    	return error;
+				}
 			    money = money + amount;
 			    
-			    stmt2 = con.prepareStatement("UPDATE ACCOUNTS SET BALANCE = ? WHERE USER_ID = ?");
+			    stmt2 = con.prepareStatement("UPDATE ACCOUNTS SET BALANCE = ? WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 				stmt2.setDouble(1, money);
 				stmt2.setInt(2, c.getId());
-				
+				stmt2.setString(3, type);
 				rs2 = stmt2.executeQuery();
+				
 				while(rs.next()) {
-			    	money = rs.getDouble("BALANCE");
-			    }
-				rs = stmt.executeQuery();
-			    while(rs.next()) {
 			    	money = rs.getDouble("BALANCE");
 			    }
 			    
@@ -233,33 +237,38 @@ public class BankDAOImpl implements BankDAO {
 
 	}	
 	
-	public double Withdraw(Customer c, double amount) {
+	public double Withdraw(Customer c, double amount, String type) {
 
-		double money = 0, newBal = 0;
+		double money = 0, newBal = 0, error = -404;
 		PreparedStatement stmt = null, stmt2;
 		
 		ResultSet rs = null, rs2 = null;
 		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
 			
-			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ?");
+			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 			stmt.setInt(1, c.getId());
-		   
+			stmt.setString(2, type);
 		    
 		    rs = stmt.executeQuery();
 		    while(rs.next()) {
 		    	money = rs.getDouble("BALANCE");
+		    	error = money;
 		    }
+		    
+		    if(error == -404) {
+			    System.out.println("You dont have a "+type+" account to deposit into.\n");
+			    	return error;
+				}
+		    
 			    if(money > amount) {
 			    money = money -amount;
-			    stmt2 = con.prepareStatement("UPDATE ACCOUNTS SET BALANCE = ? WHERE USER_ID = ?");
+			    stmt2 = con.prepareStatement("UPDATE ACCOUNTS SET BALANCE = ? WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 				stmt2.setDouble(1, money);
 				stmt2.setInt(2, c.getId());
+				stmt2.setString(3, type);
+				
 				rs2 = stmt2.executeQuery();
 				while(rs.next()) {
-			    	money = rs.getDouble("BALANCE");
-			    }
-				rs = stmt.executeQuery();
-			    while(rs.next()) {
 			    	money = rs.getDouble("BALANCE");
 			    }
 				newBal = money;
