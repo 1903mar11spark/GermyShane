@@ -13,7 +13,6 @@ public class Superuser {
 	
 	public Superuser() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public Superuser(int id, String fname, String lname, String username, String password, int accId, double balance,
 			String type) {
@@ -78,6 +77,6 @@ public class Superuser {
 	@Override
 	public String toString() {
 		return "Superuser [Super User ID: " + id + ", First Name: " + fname + ", Last Name: " + lname + ", Username: " + username
-				+ ", Password: " + password + ", Account ID:" + accId + ", Balance:" + balance + ", Account Type:" + type + "]";
+				+ ", Password: " + password + ", Account ID: " + accId + ", Balance: " + balance + ", Account Type: " + type + "]";
 	}
 }
