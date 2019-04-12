@@ -629,7 +629,7 @@ public class BankDAOImpl implements BankDAO {
 	}
 
 	public void storeTrans(int accID, double amount, double balance) {
-		PreparedStatement stmt = null, stmt2 = null;
+		PreparedStatement stmt2 = null;
 		ResultSet rs = null;
 		
 		try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {

@@ -1,5 +1,7 @@
 package com.revature.dao;
 
+import java.text.NumberFormat;
+
 public class Transactions {
 	private int accID;
 	private int tID;
@@ -70,7 +72,8 @@ public class Transactions {
 	}
 	@Override
 	public String toString() {
-		return "Transactions [ Account ID: " + accID +", Transaction ID:" + tID + ", Transaction Amount " + amount + ", Account Balance:" + balance + 
-				  ", Time:" + timestamp + "]";
+		NumberFormat form = NumberFormat.getCurrencyInstance();
+		return "Transactions [ Account ID: " + accID +", Transaction ID: " + tID + ","
+				+ " Transaction Amount " + form.format(amount) + ", Account Balance:" + form.format(balance) + ", Time:" + timestamp + "]";
 	}
 }
