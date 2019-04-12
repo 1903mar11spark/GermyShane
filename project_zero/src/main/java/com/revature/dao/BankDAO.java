@@ -8,6 +8,7 @@ public interface BankDAO {
 
 	public List<Customer> getCustomer();
 	public List<Superuser> getSuperuser();
+	public List<Transactions> getTransactions();
 	
 	public void createCust(Customer bear);
 	public void createAcc(String type, int id);
@@ -24,6 +25,8 @@ public interface BankDAO {
 	public void updateSuper(int id, String fname, String lname, String username, String password);
 	public void deleteSuper(int id);
 	public void userDeletion(Customer begone);
+	
+	public void storeTrans(int accID, double amount, double balance);
 	
 	
 	

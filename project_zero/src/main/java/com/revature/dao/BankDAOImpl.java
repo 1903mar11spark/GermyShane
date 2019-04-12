@@ -14,6 +14,8 @@ import com.revature.util.*;
 import com.revature.beans.*;
 public class BankDAOImpl implements BankDAO {
 	
+	String plug = "C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop";
+	
 	public List<Customer> getCustomer(){
 		List<Customer> cust = new ArrayList<Customer>();
 		Connection con = null;
@@ -21,7 +23,7 @@ public class BankDAOImpl implements BankDAO {
 		
 		try 
 		  { 
-		   con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		   con = ConnectionUtil.getConnectionFromFile(plug);
 		   String sql = "SELECT USER_ID, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME FROM BANKUSER";
 		   Statement stmt = con.createStatement();
 		   rs = stmt.executeQuery(sql);
@@ -49,13 +51,50 @@ public class BankDAOImpl implements BankDAO {
 			return cust;
 	}
 	
+	public List<Transactions>getTransactions(){
+		List<Transactions> trans = new ArrayList<Transactions>();
+		Connection con = null;
+		ResultSet rs = null;
+		Statement stmt = null;
+		
+		try 
+		  { 
+		   con = ConnectionUtil.getConnectionFromFile(plug);
+		   String sql = "SELECT T_ID, ACCOUNT_ID, AMOUNT, TIME_STAMP, BALANCE FROM TRANSACTIONS";
+		   stmt = con.createStatement();
+		   rs = stmt.executeQuery(sql);
+		   
+				while (rs.next()) {
+					int tID = rs.getInt("T_ID");
+					int aID = rs.getInt("ACCOUNT_ID");
+					double amount = rs.getDouble("AMOUNT");
+					String time = rs.getString("TIME_STAMP");
+					double balance = rs.getDouble("BALANCE");
+					trans.add(new Transactions(tID, aID, time, amount, balance));
+			  }
+		  }
+		  catch (SQLException e) 
+		  { 
+			  e.printStackTrace(); 
+		  }
+		  catch (IOException e) 
+		  {
+			  e.printStackTrace(); 
+		  }finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { con.close(); } catch (Exception e) { /* ignored */ }
+			}
+		
+		return trans;
+	}
+	
 	public void createCust(Customer user) {
 		//Create PreparedStatement object to execute DML queries.
         PreparedStatement stmt = null;
        
         
         //Some exception handling with connecting to a file.
-		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+		try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 			
 			//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
 			stmt = con.prepareStatement("INSERT INTO BANKUSER (USERNAME, PASSWORD, FIRST_NAME ,LAST_NAME) VALUES (?,?,?,?)");
@@ -87,7 +126,7 @@ public class BankDAOImpl implements BankDAO {
 		try 
 		  { 
 			
-		  Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		  Connection con = ConnectionUtil.getConnectionFromFile(plug);
 		  myStmt = con.prepareStatement("SELECT USERNAME, PASSWORD FROM BANKUSER WHERE USERNAME = ? AND PASSWORD =?");
 		  myStmt.setString(1, first);
 		  myStmt.setString(2, second);
@@ -113,7 +152,7 @@ public class BankDAOImpl implements BankDAO {
 		
 				PreparedStatement stmt = null;
 					
-				try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+				try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 			
 				//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
 				stmt = con.prepareStatement("INSERT INTO ACCOUNTS (ACCOUNT_TYPE, USER_ID) VALUES (?,?)");
@@ -144,7 +183,7 @@ public class BankDAOImpl implements BankDAO {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		
-		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+		try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 			
 			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 			stmt.setInt(1, c.getId());
@@ -186,10 +225,11 @@ public class BankDAOImpl implements BankDAO {
 	public double Deposit(Customer c, double amount, String type) {
 
 		double money = 0, newBal = 0, error = -404;
-		PreparedStatement stmt = null, stmt2;
+		int accID = 0;
+		PreparedStatement stmt = null, stmt2 = null, stmt3 = null;
 		
 		ResultSet rs = null, rs2 = null;
-		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+		try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 			
 			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 			stmt.setInt(1, c.getId());
@@ -215,9 +255,19 @@ public class BankDAOImpl implements BankDAO {
 				while(rs.next()) {
 			    	money = rs.getDouble("BALANCE");
 			    }
+				
+				//Retrieving the account ID from this transaction to store in the Transactions table
+				stmt3 = con.prepareStatement("SELECT ACCOUNT_ID FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE  = ?");
+				stmt3.setInt(1, c.getId());
+				stmt3.setString(2,type);
+				rs = stmt3.executeQuery();
+				
+				while(rs.next()) {
+					accID = rs.getInt("ACCOUNT_ID");
+				}
 			    
 				newBal = money;
-		   
+				storeTrans(accID,amount, newBal);
            //More exception handling.
 	      } catch (SQLException sqlEx) {
 	             sqlEx.printStackTrace();
@@ -239,26 +289,30 @@ public class BankDAOImpl implements BankDAO {
 	public double Withdraw(Customer c, double amount, String type) {
 
 		double money = 0, newBal = 0, error = -404;
-		PreparedStatement stmt = null, stmt2;
+		int accID = 0;
+		PreparedStatement stmt = null, stmt2 = null, stmt3 = null;
 		
 		ResultSet rs = null, rs2 = null;
-		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+		try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 			
 			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 			stmt.setInt(1, c.getId());
 			stmt.setString(2, type);
 		    
 		    rs = stmt.executeQuery();
+		    //Retrieve balance from account if any
 		    while(rs.next()) {
 		    	money = rs.getDouble("BALANCE");
 		    	error = money;
 		    }
 		    
+		    //If no balance was retrieved then error was not reassigned, no balance exists of this type, program ends 
 		    if(error == -404) {
 			    System.out.println("You dont have a "+type+" account to deposit into.\n");
 			    	return error;
 				}
 		    
+		    	//If balance retrieval was successful, check to see if the account has enough money. No overdrafting
 			    if(money >= amount) {
 			    money = money -amount;
 			    stmt2 = con.prepareStatement("UPDATE ACCOUNTS SET BALANCE = ? WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
@@ -270,28 +324,43 @@ public class BankDAOImpl implements BankDAO {
 				while(rs.next()) {
 			    	money = rs.getDouble("BALANCE");
 			    }
+				
+				//Retrieving the account ID from this transaction to store in the Transactions table
+				stmt3 = con.prepareStatement("SELECT ACCOUNT_ID FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE  = ?");
+				stmt3.setInt(1, c.getId());
+				stmt3.setString(2,type);
+				rs = stmt3.executeQuery();
+				
+				while(rs.next()) {
+					accID = rs.getInt("ACCOUNT_ID");
+				}
 				newBal = money;
-		    }else {
-		    	System.out.println("You have less money than you wish to withdraw. Sorry!");
-		    	return money;
-		    }
+				
+				storeTrans(accID, amount, newBal);
+				    }else {
+				    	System.out.println("You have less money than you wish to withdraw. We do not allow overdrafts, Sorry!");
+				    	return money;
+				    }
+			    
            //More exception handling.
 	      } catch (SQLException sqlEx) {
-	             sqlEx.printStackTrace();
+	             	sqlEx.printStackTrace();
 	             System.exit(1);  
-	      } catch (IOException e1) {
-			e1.printStackTrace();
-			} finally {
-		             try { 	//Ideally would close connection here.
-		                    stmt.close();  
-			             } catch (Exception e) {
-			                    System.exit(1); 
-			             }
-		             finally {
-		     		    try { rs.close(); } catch (Exception e) { /* ignored */ }
-		     		    
-		      }
-		
+		      } catch (IOException e1) {
+		    	  		e1.printStackTrace();
+					} finally {
+				             try { 	//Ideally would close connection here.
+				                    stmt.close(); 
+				                    stmt2.close();
+				                    stmt3.close();
+						             } catch (Exception e) {
+						                    	System.exit(1); 
+								             }
+								             finally {
+								     		    	try { rs.close(); } catch (Exception e) { /* ignored */ }
+						     		    
+			      }
+			
 			}
 			
 		
@@ -309,7 +378,7 @@ public class BankDAOImpl implements BankDAO {
 		String username ="" ,password = "" , fName = "", lName = "" ;
 		try 
 		  { 
-		   con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		  con = ConnectionUtil.getConnectionFromFile(plug);
 		  String sql = "SELECT USER_ID, USERNAME, PASSWORD, FIRST_NAME, LAST_NAME FROM BANKUSER WHERE USERNAME = ? AND PASSWORD = ?";
 		  stmt = con.prepareStatement(sql);
 		  stmt.setString(1, user);
@@ -352,7 +421,7 @@ public class BankDAOImpl implements BankDAO {
 		ResultSet rs = null;
 		try 
 		  { 
-		  Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		  Connection con = ConnectionUtil.getConnectionFromFile(plug);
 		  myStmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ?");
 		  myStmt.setInt(1, id);
 		  rs = myStmt.executeQuery();
@@ -381,7 +450,7 @@ public class BankDAOImpl implements BankDAO {
 		if (x == 0) {
 			CallableStatement stmt = null;
 	        //Some exception handling with connecting to a file.
-			try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+			try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 				stmt = con.prepareCall("{call SP_DELETE_USER_AND_ACCOUNT (?)}");
 				stmt.setInt(1, id);
 				
@@ -410,7 +479,7 @@ public class BankDAOImpl implements BankDAO {
 		} else {
 			CallableStatement stmt = null;
 	        //Some exception handling with connecting to a file.
-			try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+			try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 				stmt = con.prepareCall("{call SP_DELETE_USER (?)}");
 				stmt.setInt(1, id);
 				
@@ -436,13 +505,12 @@ public class BankDAOImpl implements BankDAO {
 			
 }
 	
-	
 	@Override
 	public List<Superuser> getSuperuser() {
 		List<Superuser> superU = new ArrayList<Superuser>();
 		try 
 		  { 
-		  Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop");
+		  Connection con = ConnectionUtil.getConnectionFromFile(plug);
 		  String sql = "SELECT * FROM BANKUSER FULL JOIN ACCOUNTS ON BANKUSER.USER_ID = ACCOUNTS.USER_ID";
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
@@ -473,7 +541,7 @@ public class BankDAOImpl implements BankDAO {
 	public void updateSuper(int id, String fname, String lname, String username, String password) {
 		PreparedStatement stmt = null;
         //Some exception handling with connecting to a file.
-		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+		try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 			
 			//Writing DML query, then using the PreparedStatement helper methods to later execute the query.
 			stmt = con.prepareStatement("UPDATE BANKUSER\n" + 
@@ -507,14 +575,13 @@ public class BankDAOImpl implements BankDAO {
 		
 	}
 
-	
 	@Override
 	public void userDeletion(Customer begone) {
 		double checking = 0, savings = 0 ;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		
-		try ( Connection con = ConnectionUtil.getConnectionFromFile("C:/gitrepos/Bank/project_zero/src/main/java/resources/Connection.prop")) {
+		try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
 			
 			stmt = con.prepareStatement("SELECT BALANCE FROM ACCOUNTS WHERE USER_ID = ? AND ACCOUNT_TYPE = ?");
 			stmt.setInt(1, begone.getId());
@@ -559,5 +626,39 @@ public class BankDAOImpl implements BankDAO {
 					
 					}
 				}
+	}
+
+	public void storeTrans(int accID, double amount, double balance) {
+		PreparedStatement stmt = null, stmt2 = null;
+		ResultSet rs = null;
+		
+		try ( Connection con = ConnectionUtil.getConnectionFromFile(plug)) {
+	    	
+		    stmt2 = con.prepareStatement("INSERT INTO TRANSACTIONS (ACCOUNT_ID, AMOUNT, BALANCE) VALUES (?,?,?)");
+		    stmt2.setInt(1,accID);
+		    stmt2.setDouble(2,amount);
+		    stmt2.setDouble(3,balance);
+		    
+		    stmt2.executeUpdate();
+			    
+           //More exception handling.
+	      } catch (SQLException sqlEx) {
+	             sqlEx.printStackTrace();
+	             System.exit(1);  
+	      } catch (IOException e1) {
+			e1.printStackTrace();
+			} finally {
+		             try { 	//Ideally would close connection here.
+		                    stmt2.close();  
+			             } catch (Exception e) {
+			                    System.exit(1); 
+			             }
+		             finally {
+		     		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		     		    //try { con.close(); } catch (Exception e) { /* ignored */ }
+		      }
+		
+		
+			}
 	}
 }

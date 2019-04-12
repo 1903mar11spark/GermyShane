@@ -13,7 +13,6 @@ public class Superuser {
 	
 	public Superuser() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public Superuser(int id, String fname, String lname, String username, String password, int accId, double balance,
 			String type) {
