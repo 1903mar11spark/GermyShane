@@ -1,4 +1,4 @@
-package com.revature.dao;
+package com.revature.beans;
 
 import java.text.NumberFormat;
 
